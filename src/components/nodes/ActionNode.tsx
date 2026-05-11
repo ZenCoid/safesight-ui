@@ -1,5 +1,5 @@
 import { Handle, Position, NodeProps } from 'reactflow';
-import { ActionNodeData } from '../types';
+import { ActionNodeData } from '../../types';
 
 const channelIcons: Record<string, string> = {
     whatsapp: '📱',

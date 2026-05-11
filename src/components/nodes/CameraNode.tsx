@@ -1,6 +1,6 @@
 import { Handle, Position, NodeProps } from 'reactflow';
-import { CameraNodeData } from '../types';
-import { useFlowStore } from '../store/flowStore';
+import { CameraNodeData } from '../../types';
+import { useFlowStore } from '../../store/flowStore';
 
 export const CameraNode = ({ data }: NodeProps<CameraNodeData>) => {
     const setSelected = useFlowStore(s => s.setSelectedCameraForZone);
@@ -13,7 +13,7 @@ export const CameraNode = ({ data }: NodeProps<CameraNodeData>) => {
                 <span className="text-sm font-bold">{data.label}</span>
                 <button
                     onClick={() => setSelected(data.cameraId)}
-                    className="mt-2 text-xs bg-safesight-500/20 text-safesight-500 px-2 py-0.5 rounded hover:bg-safesight-500/30"
+                    className="mt-2 text-xs bg-safesight-500/20 text-safesight-500 px-2 py-0.5 rounded hover:bg-safesight-500/30 transition-colors"
                 >
                     Edit Zones
                 </button>

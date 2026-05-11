@@ -1,5 +1,5 @@
 import { Handle, Position, NodeProps } from 'reactflow';
-import { DetectorNodeData } from '../types';
+import { DetectorNodeData } from '../../types';
 
 export const DetectorNode = ({ data }: NodeProps<DetectorNodeData>) => {
     return (

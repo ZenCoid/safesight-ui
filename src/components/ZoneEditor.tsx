@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Stage, Layer, Image as KonvaImage, Line, Circle } from 'react-konva';
 import Konva from 'konva';
-import { ZoneData } from '../types';
 import { useFlowStore } from '../store/flowStore';
 
 interface Props {
@@ -12,20 +11,19 @@ interface Props {
 
 export const ZoneEditor = ({ cameraId, cameraName, onClose }: Props) => {
     const [image, setImage] = useState<HTMLImageElement | null>(null);
-    const [points, setPoints] = useState<number[]>([]); // absolute canvas coords
+    const [points, setPoints] = useState<number[]>([]);
     const [isFinished, setIsFinished] = useState(false);
     const stageRef = useRef<Konva.Stage>(null);
     const addZone = useFlowStore(s => s.addZone);
 
-    // Load placeholder snapshot (in production, fetch from camera)
     useEffect(() => {
         const img = new window.Image();
         img.crossOrigin = 'Anonymous';
-        img.src = 'https://via.placeholder.com/640x360.png?text=Camera+Snapshot'; // placeholder
+        img.src = 'https://via.placeholder.com/640x360.png?text=Camera+Snapshot';
         img.onload = () => setImage(img);
     }, [cameraId]);
 
-    const handleStageClick = (e: Konva.KonvaEventObject<MouseEvent>) => {
+    const handleStageClick = () => {
         if (isFinished) return;
         const stage = stageRef.current;
         if (!stage) return;
@@ -35,7 +33,7 @@ export const ZoneEditor = ({ cameraId, cameraName, onClose }: Props) => {
     };
 
     const finishPolygon = () => {
-        if (points.length < 6) { // need at least 3 points (6 coordinates)
+        if (points.length < 6) {
             alert('Need at least 3 points to form a polygon.');
             return;
         }
@@ -45,12 +43,11 @@ export const ZoneEditor = ({ cameraId, cameraName, onClose }: Props) => {
     const saveZone = () => {
         if (!image || !stageRef.current || points.length < 6) return;
         const name = prompt('Zone name:') || 'Unnamed Zone';
-        // Normalize points: divide by image size
         const normalizedPoints: number[][] = [];
         for (let i = 0; i < points.length; i += 2) {
             normalizedPoints.push([
-                points[i] / image.width,
-                points[i + 1] / image.height,
+                points[i] / 640,
+                points[i + 1] / 360,
             ]);
         }
         addZone({ cameraId, name, points: normalizedPoints });
@@ -59,18 +56,18 @@ export const ZoneEditor = ({ cameraId, cameraName, onClose }: Props) => {
     };
 
     return (
-        <div className="absolute top-0 right-0 w-96 h-full bg-gray-900 border-l border-gray-700 p-4 flex flex-col z-50">
+        <div className="absolute top-0 right-0 w-96 h-full bg-gray-900 border-l border-gray-700 p-4 flex flex-col z-50 shadow-2xl">
             <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-bold">Zones for {cameraName}</h3>
-                <button onClick={onClose} className="text-gray-400 hover:text-white">✕</button>
+                <h3 className="text-lg font-bold">Zones: {cameraName}</h3>
+                <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">✕</button>
             </div>
-            <div className="flex-1 bg-black rounded overflow-hidden mb-2">
+            <div className="flex-1 bg-black rounded overflow-hidden mb-2 flex items-center justify-center">
                 <Stage
                     ref={stageRef}
                     width={640}
                     height={360}
                     onClick={handleStageClick}
-                    style={{ borderRadius: '0.5rem' }}
+                    style={{ borderRadius: '0.5rem', maxWidth: '100%', height: 'auto' }}
                 >
                     <Layer>
                         {image && <KonvaImage image={image} width={640} height={360} />}
@@ -97,15 +94,15 @@ export const ZoneEditor = ({ cameraId, cameraName, onClose }: Props) => {
             </div>
             <div className="flex gap-2">
                 {!isFinished ? (
-                    <button onClick={finishPolygon} className="flex-1 bg-safesight-500 hover:bg-safesight-600 rounded py-1 text-sm">
+                    <button onClick={finishPolygon} className="flex-1 bg-safesight-500 hover:bg-safesight-600 rounded py-1 text-sm transition-colors">
                         Close Polygon
                     </button>
                 ) : (
-                    <button onClick={saveZone} className="flex-1 bg-safesight-500 hover:bg-safesight-600 rounded py-1 text-sm">
+                    <button onClick={saveZone} className="flex-1 bg-safesight-500 hover:bg-safesight-600 rounded py-1 text-sm transition-colors">
                         Save Zone
                     </button>
                 )}
-                <button onClick={() => { setPoints([]); setIsFinished(false); }} className="px-3 bg-gray-700 rounded text-sm">Reset</button>
+                <button onClick={() => { setPoints([]); setIsFinished(false); }} className="px-3 bg-gray-700 hover:bg-gray-600 rounded text-sm transition-colors">Reset</button>
             </div>
         </div>
     );

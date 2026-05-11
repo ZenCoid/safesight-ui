@@ -1,15 +1,19 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { ReactFlowProvider } from 'reactflow';
 import { RuleCanvas } from './components/RuleCanvas';
 import { NodePalette } from './components/NodePalette';
 import { RulePreview } from './components/RulePreview';
-import { getCameras } from './api/backend';
+import { ZoneEditor } from './components/ZoneEditor';
+import { getCameras, Camera } from './api/backend';
 import { useFlowStore } from './store/flowStore';
 
 function App() {
     const [cameras, setCameras] = useState<Camera[]>([]);
     const [showPreview, setShowPreview] = useState(false);
     const [ruleName, setRuleName] = useState('New Rule');
+
+    const selectedCameraForZone = useFlowStore(s => s.selectedCameraForZone);
+    const setSelectedCameraForZone = useFlowStore(s => s.setSelectedCameraForZone);
 
     useEffect(() => {
         getCameras().then(res => setCameras(res.data)).catch(console.error);
@@ -18,38 +22,45 @@ function App() {
     return (
         <div className="h-screen flex flex-col bg-gray-950 text-gray-100 font-sans">
             {/* Top bar */}
-            <header className="h-14 bg-gray-900 border-b border-gray-800 flex items-center px-4 justify-between">
+            <header className="h-14 bg-gray-900 border-b border-gray-800 flex items-center px-4 justify-between shrink-0">
                 <div className="flex items-center gap-3">
                     <h1 className="text-xl font-bold tracking-tight text-safesight-500">SafeSight</h1>
                     <span className="text-gray-500">|</span>
                     <input
                         value={ruleName}
                         onChange={e => setRuleName(e.target.value)}
-                        className="bg-transparent border-b border-gray-700 focus:border-safesight-500 outline-none px-2"
+                        className="bg-transparent border-b border-gray-700 focus:border-safesight-500 outline-none px-2 w-48"
                         placeholder="Rule Name"
                     />
                 </div>
                 <div className="flex gap-2">
                     <button
                         onClick={() => setShowPreview(true)}
-                        className="px-4 py-1 bg-gray-800 hover:bg-gray-700 rounded text-sm"
+                        className="px-4 py-1 bg-gray-800 hover:bg-gray-700 rounded text-sm transition-colors"
                     >
-                        Validate & Preview
+                        Validate &amp; Preview
                     </button>
-                    <button className="px-4 py-1 bg-safesight-500 hover:bg-safesight-700 text-black font-semibold rounded text-sm">
+                    <button className="px-4 py-1 bg-safesight-500 hover:bg-safesight-700 text-black font-semibold rounded text-sm transition-colors">
                         Deploy Rule
                     </button>
                 </div>
             </header>
 
             {/* Main area */}
-            <div className="flex flex-1 overflow-hidden">
+            <div className="flex flex-1 overflow-hidden relative">
                 <NodePalette cameras={cameras} />
                 <div className="flex-1 relative">
                     <ReactFlowProvider>
                         <RuleCanvas />
                     </ReactFlowProvider>
                 </div>
+                {selectedCameraForZone && (
+                    <ZoneEditor
+                        cameraId={selectedCameraForZone}
+                        cameraName={cameras.find(c => c.id === selectedCameraForZone)?.name || ''}
+                        onClose={() => setSelectedCameraForZone(null)}
+                    />
+                )}
             </div>
 
             {showPreview && (
@@ -60,20 +71,6 @@ function App() {
             )}
         </div>
     );
-}
-
-import { ZoneEditor } from './components/ZoneEditor';
-// ...
-const selectedCameraForZone = useFlowStore(s => s.selectedCameraForZone);
-// inside return after main area div:
-{
-    selectedCameraForZone && (
-        <ZoneEditor
-            cameraId={selectedCameraForZone}
-            cameraName={cameras.find(c => c.id === selectedCameraForZone)?.name || ''}
-            onClose={() => setSelectedCameraForZone(null)}
-        />
-    )
 }
 
 export default App;

@@ -5,11 +5,11 @@ import ReactFlow, {
     ReactFlowInstance,
     Node,
 } from 'reactflow';
+import 'reactflow/dist/style.css';
 import { CameraNode } from './nodes/CameraNode';
 import { DetectorNode } from './nodes/DetectorNode';
 import { ActionNode } from './nodes/ActionNode';
 import { useFlowStore } from '../store/flowStore';
-import { CameraNodeData, DetectorNodeData, ActionNodeData } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 
 const nodeTypes = {
@@ -19,7 +19,7 @@ const nodeTypes = {
 };
 
 export const RuleCanvas = () => {
-    const { nodes, edges, onNodesChange, onEdgesChange, setNodes, setEdges } = useFlowStore();
+    const { nodes, edges, onNodesChange, onEdgesChange, addNode } = useFlowStore();
     const reactFlowInstance = useRef<ReactFlowInstance | null>(null);
 
     const onDragOver = useCallback((event: React.DragEvent) => {
@@ -31,9 +31,10 @@ export const RuleCanvas = () => {
         (event: React.DragEvent) => {
             event.preventDefault();
             const raw = event.dataTransfer.getData('application/reactflow');
-            if (!raw) return;
+            if (!raw || !reactFlowInstance.current) return;
+
             const { nodeType, data } = JSON.parse(raw);
-            const position = reactFlowInstance.current!.screenToFlowPosition({
+            const position = reactFlowInstance.current.screenToFlowPosition({
                 x: event.clientX,
                 y: event.clientY,
             });
@@ -44,9 +45,9 @@ export const RuleCanvas = () => {
                 position,
                 data: { ...data },
             };
-            setNodes([...nodes, newNode]);
+            addNode(newNode);
         },
-        [nodes, setNodes]
+        [addNode]
     );
 
     return (
@@ -62,9 +63,10 @@ export const RuleCanvas = () => {
             fitView
             className="bg-gray-950"
             deleteKeyCode={['Backspace', 'Delete']}
+            defaultEdgeOptions={{ animated: true, style: { stroke: '#14b8a6', strokeWidth: 2 } }}
         >
             <Background color="#1f2937" gap={20} />
-            <Controls className="!bg-gray-800 !border-gray-700 !text-gray-300" />
+            <Controls className="!bg-gray-800 !border-gray-700 !fill-gray-300" />
         </ReactFlow>
     );
 };

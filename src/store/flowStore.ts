@@ -1,21 +1,50 @@
-export interface CameraNodeData {
-    cameraId: string;
-    label: string;
-    snapshotUrl?: string;
+import { create } from 'zustand';
+import {
+    Node,
+    Edge,
+    OnNodesChange,
+    OnEdgesChange,
+    applyNodeChanges,
+    applyEdgeChanges,
+} from 'reactflow';
+import { CameraNodeData, DetectorNodeData, ActionNodeData, ZoneData } from '../types';
+
+interface FlowState {
+    nodes: Node<CameraNodeData | DetectorNodeData | ActionNodeData>[];
+    edges: Edge[];
+    zones: ZoneData[];
+    selectedCameraForZone: string | null;
+
+    onNodesChange: OnNodesChange;
+    onEdgesChange: OnEdgesChange;
+    addNode: (node: Node<CameraNodeData | DetectorNodeData | ActionNodeData>) => void;
+    setNodes: (nodes: Node<CameraNodeData | DetectorNodeData | ActionNodeData>[]) => void;
+    setEdges: (edges: Edge[]) => void;
+    addZone: (zone: ZoneData) => void;
+    removeZone: (cameraId: string, name: string) => void;
+    setSelectedCameraForZone: (cameraId: string | null) => void;
 }
 
-export interface DetectorNodeData {
-    modules: string[]; // e.g., ['person','helmet']
-}
+export const useFlowStore = create<FlowState>((set) => ({
+    nodes: [],
+    edges: [],
+    zones: [],
+    selectedCameraForZone: null,
 
-export interface ActionNodeData {
-    channels: string[];
-}
+    onNodesChange: (changes) =>
+        set((state) => ({ nodes: applyNodeChanges(changes, state.nodes) })),
+    onEdgesChange: (changes) =>
+        set((state) => ({ edges: applyEdgeChanges(changes, state.edges) })),
 
-export type CustomNodeData = CameraNodeData | DetectorNodeData | ActionNodeData;
+    addNode: (node) => set((state) => ({ nodes: [...state.nodes, node] })),
+    setNodes: (nodes) => set({ nodes }),
+    setEdges: (edges) => set({ edges }),
 
-export interface ZoneData {
-    cameraId: string;
-    name: string;
-    points: number[][]; // normalized
-}
+    addZone: (zone) =>
+        set((state) => ({ zones: [...state.zones, zone] })),
+    removeZone: (cameraId, name) =>
+        set((state) => ({
+            zones: state.zones.filter(z => !(z.cameraId === cameraId && z.name === name))
+        })),
+    setSelectedCameraForZone: (cameraId) => set({ selectedCameraForZone: cameraId }),
+}));

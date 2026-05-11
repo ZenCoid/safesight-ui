@@ -14,9 +14,9 @@ export const RulePreview = ({ ruleName, onClose }: Props) => {
     const handleDeploy = async () => {
         try {
             await createRule(rule);
-            setStatus('Rule deployed successfully!');
+            setStatus('✅ Rule deployed successfully!');
         } catch (err) {
-            setStatus('Error deploying rule.');
+            setStatus('❌ Error deploying rule.');
             console.error(err);
         }
     };
@@ -26,16 +26,16 @@ export const RulePreview = ({ ruleName, onClose }: Props) => {
             <div className="bg-gray-800 rounded-lg p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto shadow-2xl">
                 <div className="flex justify-between items-center mb-4">
                     <h2 className="text-xl font-bold text-safesight-500">Rule Preview</h2>
-                    <button onClick={onClose} className="text-gray-400 hover:text-white">✕</button>
+                    <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">✕</button>
                 </div>
-                <pre className="text-xs bg-gray-900 p-4 rounded overflow-auto max-h-96">
+                <pre className="text-xs bg-gray-900 p-4 rounded overflow-auto max-h-96 text-green-300">
                     {JSON.stringify(rule, null, 2)}
                 </pre>
                 <div className="mt-4 flex justify-between items-center">
-                    <span className={`text-sm ${status.includes('success') ? 'text-green-400' : 'text-red-400'}`}>{status}</span>
+                    <span className={`text-sm ${status.includes('✅') ? 'text-green-400' : 'text-red-400'}`}>{status}</span>
                     <button
                         onClick={handleDeploy}
-                        className="bg-safesight-500 hover:bg-safesight-600 text-black font-semibold px-4 py-2 rounded"
+                        className="bg-safesight-500 hover:bg-safesight-600 text-black font-semibold px-4 py-2 rounded transition-colors"
                     >
                         Deploy to Backend
                     </button>

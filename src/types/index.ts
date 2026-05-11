@@ -5,7 +5,7 @@ export interface CameraNodeData {
 }
 
 export interface DetectorNodeData {
-    modules: string[]; // e.g., ['person','helmet']
+    modules: string[];
 }
 
 export interface ActionNodeData {
@@ -17,5 +17,5 @@ export type CustomNodeData = CameraNodeData | DetectorNodeData | ActionNodeData;
 export interface ZoneData {
     cameraId: string;
     name: string;
-    points: number[][]; // normalized
+    points: number[][];
 }
