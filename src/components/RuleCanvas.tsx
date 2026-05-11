@@ -20,7 +20,7 @@ const nodeTypes = {
 };
 
 export const RuleCanvas = () => {
-    const { nodes, edges, onNodesChange, onEdgesChange, addNode } = useFlowStore();
+    const { nodes, edges, onNodesChange, onEdgesChange, addNode, onConnect } = useFlowStore();
     const reactFlowInstance = useRef<ReactFlowInstance | null>(null);
 
     const onDragOver = useCallback((event: React.DragEvent) => {
@@ -44,7 +44,7 @@ export const RuleCanvas = () => {
                 id: uuidv4(),
                 type: nodeType,
                 position,
-                data: data as CustomNodeData, // data comes from draggable palette, already matches one of the node data types
+                data: data as CustomNodeData,
             };
             addNode(newNode);
         },
@@ -57,6 +57,7 @@ export const RuleCanvas = () => {
             edges={edges}
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
+            onConnect={onConnect}
             nodeTypes={nodeTypes}
             onInit={(inst) => { reactFlowInstance.current = inst; }}
             onDragOver={onDragOver}
