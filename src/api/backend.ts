@@ -1,0 +1,54 @@
+import axios from 'axios';
+
+const api = axios.create({
+    baseURL: 'http://127.0.0.1:8000',
+});
+
+export interface Camera {
+    id: string;
+    name: string;
+    rtsp_url: string;
+    enabled: boolean;
+    health_status: string;
+    current_fps: number;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface RuleDefinition {
+    rule_id: string;
+    rule_name: string;
+    version: string;
+    enabled: boolean;
+    cameras: string[];
+    detection_modules: string[];
+    zones: PolygonZone[];
+    confidence_threshold: number;
+    min_duration_seconds: number;
+    cooldown_seconds: number;
+    schedule: ScheduleWindow | null;
+    escalation_levels: EscalationLevel[];
+    multi_camera_links: any[];
+    condition: string;
+}
+
+export interface PolygonZone {
+    name: string;
+    points: number[][]; // normalized 0‑1
+}
+
+export interface ScheduleWindow {
+    days: string[];
+    start_time: string;
+    end_time: string;
+    timezone: string;
+}
+
+export interface EscalationLevel {
+    channels: string[];
+    delay_seconds: number;
+    unacknowledged_seconds?: number;
+}
+
+export const getCameras = () => api.get<Camera[]>('/cameras/');
+export const createRule = (rule: RuleDefinition) => api.post('/rules/', rule);
