@@ -10,6 +10,7 @@ import { CameraNode } from './nodes/CameraNode';
 import { DetectorNode } from './nodes/DetectorNode';
 import { ActionNode } from './nodes/ActionNode';
 import { useFlowStore } from '../store/flowStore';
+import { CustomNodeData } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 
 const nodeTypes = {
@@ -39,11 +40,11 @@ export const RuleCanvas = () => {
                 y: event.clientY,
             });
 
-            const newNode: Node = {
+            const newNode: Node<CustomNodeData> = {
                 id: uuidv4(),
                 type: nodeType,
                 position,
-                data: { ...data },
+                data: data as CustomNodeData, // data comes from draggable palette, already matches one of the node data types
             };
             addNode(newNode);
         },
