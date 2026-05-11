@@ -1,46 +1,59 @@
-import { RuleDefinition, EscalationLevel, PolygonZone } from '../api/backend';
+import { RuleDefinition, EscalationLevel } from '../api/backend';
 import { useFlowStore } from '../store/flowStore';
+import { CameraNodeData, DetectorNodeData, ActionNodeData } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 
 export function generateRule(ruleName: string): RuleDefinition {
     const { nodes, edges, zones } = useFlowStore.getState();
 
-    // Find all camera nodes
     const cameraNodes = nodes.filter(n => n.type === 'camera');
     const detectorNodes = nodes.filter(n => n.type === 'detector');
     const actionNodes = nodes.filter(n => n.type === 'action');
 
-    // Cameras: list of IDs of camera nodes that have an outgoing edge to a detector
+    // Helper to safely get typed data from a node
+    const getCameraData = (node: typeof nodes[number]): CameraNodeData | null =>
+        node.type === 'camera' ? node.data as CameraNodeData : null;
+    const getDetectorData = (node: typeof nodes[number]): DetectorNodeData | null =>
+        node.type === 'detector' ? node.data as DetectorNodeData : null;
+    const getActionData = (node: typeof nodes[number]): ActionNodeData | null =>
+        node.type === 'action' ? node.data as ActionNodeData : null;
+
     const activeCameraIds = cameraNodes
         .filter(cn => edges.some(e => e.source === cn.id && nodes.find(n => n.id === e.target)?.type === 'detector'))
-        .map(cn => (cn.data as any).cameraId);
+        .map(cn => getCameraData(cn))
+        .filter((d): d is CameraNodeData => d !== null)
+        .map(d => d.cameraId);
 
-    // Detection modules: union of all detector nodes' modules
     const allModules = new Set<string>();
     detectorNodes.forEach(dn => {
-        (dn.data as any).modules.forEach((m: string) => allModules.add(m));
+        const data = getDetectorData(dn);
+        if (data) data.modules.forEach(m => allModules.add(m));
     });
     const detection_modules = Array.from(allModules);
 
-    // Zones: only from cameras that are active and have zones stored
     const activeZoneCameras = new Set(
-        edges.filter(e => cameraNodes.some(cn => cn.id === e.source) && detectorNodes.some(dn => dn.id === e.target))
-            .map(e => (nodes.find(n => n.id === e.source)!.data as any).cameraId)
+        edges
+            .filter(e => cameraNodes.some(cn => cn.id === e.source) && detectorNodes.some(dn => dn.id === e.target))
+            .map(e => {
+                const srcNode = nodes.find(n => n.id === e.source);
+                return srcNode ? getCameraData(srcNode) : null;
+            })
+            .filter((d): d is CameraNodeData => d !== null)
+            .map(d => d.cameraId)
     );
     const relevantZones = zones.filter(z => activeZoneCameras.has(z.cameraId));
 
-    // Escalation levels: from action nodes that are connected from a detector
     const activeActionNodes = actionNodes.filter(an =>
         edges.some(e => e.target === an.id && nodes.find(n => n.id === e.source)?.type === 'detector')
     );
-    const escalation_levels: EscalationLevel[] = activeActionNodes.map(an => ({
-        channels: (an.data as any).channels,
-        delay_seconds: 0, // default immediate; could be configurable in node
-    }));
+    const escalation_levels: EscalationLevel[] = activeActionNodes
+        .map(an => getActionData(an))
+        .filter((d): d is ActionNodeData => d !== null)
+        .map(d => ({
+            channels: d.channels,
+            delay_seconds: 0,
+        }));
 
-    // Condition: simple DSL based on connected detectors
-    // For now, build a condition like: person_in_zone AND helmet_status=='none'
-    // If helmet module present, assume we want to detect missing helmet.
     let condition = 'person_in_zone';
     if (allModules.has('helmet')) {
         condition += " AND helmet_status=='none'";
@@ -49,7 +62,7 @@ export function generateRule(ruleName: string): RuleDefinition {
         condition += ' AND fire_detected';
     }
 
-    const rule: RuleDefinition = {
+    return {
         rule_id: uuidv4(),
         rule_name: ruleName,
         version: '1.0',
@@ -65,6 +78,4 @@ export function generateRule(ruleName: string): RuleDefinition {
         multi_camera_links: [],
         condition,
     };
-
-    return rule;
 }

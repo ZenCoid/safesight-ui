@@ -23,7 +23,7 @@ export const ZoneEditor = ({ cameraId, cameraName, onClose }: Props) => {
         img.onload = () => setImage(img);
     }, [cameraId]);
 
-    const handleStageClick = () => {
+    const handleStageClick = (_e: Konva.KonvaEventObject<MouseEvent>) => {
         if (isFinished) return;
         const stage = stageRef.current;
         if (!stage) return;

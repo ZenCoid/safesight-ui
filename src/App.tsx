@@ -4,13 +4,15 @@ import { RuleCanvas } from './components/RuleCanvas';
 import { NodePalette } from './components/NodePalette';
 import { RulePreview } from './components/RulePreview';
 import { ZoneEditor } from './components/ZoneEditor';
-import { getCameras, Camera } from './api/backend';
+import { getCameras, Camera, createRule } from './api/backend';
 import { useFlowStore } from './store/flowStore';
+import { generateRule } from './utils/ruleGenerator';
 
 function App() {
     const [cameras, setCameras] = useState<Camera[]>([]);
     const [showPreview, setShowPreview] = useState(false);
     const [ruleName, setRuleName] = useState('New Rule');
+    const [deployStatus, setDeployStatus] = useState<string>('');
 
     const selectedCameraForZone = useFlowStore(s => s.selectedCameraForZone);
     const setSelectedCameraForZone = useFlowStore(s => s.setSelectedCameraForZone);
@@ -18,6 +20,17 @@ function App() {
     useEffect(() => {
         getCameras().then(res => setCameras(res.data)).catch(console.error);
     }, []);
+
+    const handleDeploy = async () => {
+        try {
+            const rule = generateRule(ruleName);
+            await createRule(rule);
+            setDeployStatus(`✅ Rule "${ruleName}" deployed successfully!`);
+        } catch (err) {
+            setDeployStatus('❌ Error deploying rule.');
+            console.error(err);
+        }
+    };
 
     return (
         <div className="h-screen flex flex-col bg-gray-950 text-gray-100 font-sans">
@@ -33,14 +46,22 @@ function App() {
                         placeholder="Rule Name"
                     />
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 items-center">
+                    {deployStatus && (
+                        <span className={`text-xs ${deployStatus.includes('✅') ? 'text-green-400' : 'text-red-400'}`}>
+                            {deployStatus}
+                        </span>
+                    )}
                     <button
                         onClick={() => setShowPreview(true)}
                         className="px-4 py-1 bg-gray-800 hover:bg-gray-700 rounded text-sm transition-colors"
                     >
                         Validate &amp; Preview
                     </button>
-                    <button className="px-4 py-1 bg-safesight-500 hover:bg-safesight-700 text-black font-semibold rounded text-sm transition-colors">
+                    <button
+                        onClick={handleDeploy}
+                        className="px-4 py-1 bg-safesight-500 hover:bg-safesight-700 text-black font-semibold rounded text-sm transition-colors"
+                    >
                         Deploy Rule
                     </button>
                 </div>
