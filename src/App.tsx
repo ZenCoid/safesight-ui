@@ -105,7 +105,7 @@ function App() {
                             </button>
                             <button
                                 onClick={handleDeploy}
-                                className="px-4 py-1 bg-safesight-500 hover:bg-safesight-700 text-black font-semihold rounded text-sm transition-colors"
+                                className="px-4 py-1 bg-safesight-500 hover:bg-safesight-700 text-black font-semibold rounded text-sm transition-colors"
                             >
                                 Deploy Rule
                             </button>

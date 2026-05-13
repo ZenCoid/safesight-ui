@@ -7,21 +7,23 @@ interface ForensicResult {
     thumbnail_url: string;
     vlm_reasoning: string;
     timestamp: string;
-    clip_url?: string;
+    present: boolean;
 }
 
 export const ForensicVault = () => {
     const [query, setQuery] = useState('');
     const [results, setResults] = useState<ForensicResult[]>([]);
     const [loading, setLoading] = useState(false);
+    const [showAll, setShowAll] = useState(false);
 
     const handleSearch = async () => {
         if (!query.trim()) return;
         setLoading(true);
         try {
-            // Call new backend endpoint that searches all frames in MinIO
             const res = await axios.post('http://127.0.0.1:8000/v1/forensic/search', {
                 query: query,
+                max_frames: 10,
+                show_all: showAll,
             });
             setResults(res.data.results);
         } catch (e) {
@@ -50,8 +52,24 @@ export const ForensicVault = () => {
                     {loading ? 'Searching...' : 'Investigate'}
                 </button>
             </div>
+            <div className="flex items-center gap-2 mb-6">
+                <label className="flex items-center gap-2 text-sm text-gray-400 cursor-pointer">
+                    <input
+                        type="checkbox"
+                        checked={showAll}
+                        onChange={(e) => setShowAll(e.target.checked)}
+                        className="accent-cyber-400 w-4 h-4 rounded"
+                    />
+                    Show all frames (including non‑matches)
+                </label>
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {results.length === 0 && !loading && (
+                    <div className="col-span-full text-gray-500 text-center py-12">
+                        {query ? 'No frames matched your query.' : 'Enter a query to begin an investigation.'}
+                    </div>
+                )}
                 {results.map((item, idx) => (
                     <motion.div
                         key={idx}
@@ -72,12 +90,19 @@ export const ForensicVault = () => {
                             <p className="text-sm text-gray-300 mb-3">
                                 {item.vlm_reasoning}
                             </p>
-                            <button
-                                onClick={() => window.open(item.clip_url || item.thumbnail_url, '_blank')}
-                                className="text-xs bg-cyber-500/20 text-cyber-400 px-3 py-1 rounded hover:bg-cyber-500/30 transition-colors"
-                            >
-                                Download Clip
-                            </button>
+                            <div className="flex items-center justify-between">
+                                <span
+                                    className={`text-xs px-2 py-0.5 rounded ${item.present ? 'bg-green-400/20 text-green-400' : 'bg-gray-500/20 text-gray-400'}`}
+                                >
+                                    {item.present ? 'Match' : 'No Match'}
+                                </span>
+                                <button
+                                    onClick={() => window.open(item.thumbnail_url, '_blank')}
+                                    className="text-xs bg-cyber-500/20 text-cyber-400 px-3 py-1 rounded hover:bg-cyber-500/30 transition-colors"
+                                >
+                                    Download Clip
+                                </button>
+                            </div>
                         </div>
                     </motion.div>
                 ))}
