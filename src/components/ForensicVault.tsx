@@ -8,6 +8,7 @@ interface ForensicResult {
     vlm_reasoning: string;
     timestamp: string;
     present: boolean;
+    image_hash: string;
 }
 
 export const ForensicVault = () => {
@@ -90,7 +91,7 @@ export const ForensicVault = () => {
                             <p className="text-sm text-gray-300 mb-3">
                                 {item.vlm_reasoning}
                             </p>
-                            <div className="flex items-center justify-between">
+                            <div className="flex items-center justify-between mb-2">
                                 <span
                                     className={`text-xs px-2 py-0.5 rounded ${item.present ? 'bg-green-400/20 text-green-400' : 'bg-gray-500/20 text-gray-400'}`}
                                 >
@@ -103,6 +104,11 @@ export const ForensicVault = () => {
                                     Download Clip
                                 </button>
                             </div>
+                            {item.image_hash && (
+                                <p className="text-xs text-gray-500 truncate font-mono">
+                                    SHA‑256: {item.image_hash}
+                                </p>
+                            )}
                         </div>
                     </motion.div>
                 ))}
