@@ -6,7 +6,7 @@ import { NodePalette } from './components/NodePalette';
 import { RulePreview } from './components/RulePreview';
 import { ZoneEditor } from './components/ZoneEditor';
 import { ForensicVault } from './components/ForensicVault';
-import { DotGrid } from './components/effects/DotGrid';
+import { AuroraBackground } from './components/effects/AuroraBackground';
 import { getCameras, Camera, createRule, createPinned } from './api/backend';
 import { useFlowStore } from './store/flowStore';
 import { generateRule } from './utils/ruleGenerator';
@@ -38,10 +38,8 @@ function App() {
                     return camNode ? (camNode.data as any).cameraId : null;
                 })
                 .filter(Boolean) as string[];
-
             const imageKey = vlmData.imageKey?.trim() || '';
             const keys = imageKey ? [imageKey] : [];
-
             try {
                 await createPinned({
                     query: vlmData.query,
@@ -58,7 +56,6 @@ function App() {
             }
             return;
         }
-
         try {
             const rule = generateRule(ruleName);
             await createRule(rule);
@@ -70,30 +67,31 @@ function App() {
     };
 
     return (
-        <div className="h-screen flex flex-col bg-security-950 text-gray-100 font-sans relative">
-            <DotGrid />
-            <header className="h-14 bg-security-900/80 backdrop-blur-sm border-b border-cyber-900/50 flex items-center px-4 justify-between shrink-0 z-20">
-                <div className="flex items-center gap-3">
-                    <h1 className="text-xl font-bold tracking-tight text-cyber-400">SafeSight</h1>
-                    <span className="text-gray-500">|</span>
-                    <div className="flex gap-2">
+        <div className="h-screen flex flex-col bg-[#020617] text-gray-100 font-['Inter'] relative overflow-hidden">
+            <AuroraBackground />
+
+            {/* Header */}
+            <header className="h-14 flex items-center px-6 justify-between shrink-0 z-20 border-b border-gray-800/50">
+                <div className="flex items-center gap-6">
+                    <h1 className="text-lg font-light tracking-[0.2em] text-cyber-400">SAFESIGHT</h1>
+                    <div className="flex gap-4">
                         <button
                             onClick={() => setActiveTab('canvas')}
-                            className={`px-3 py-1 text-sm rounded transition-colors ${activeTab === 'canvas' ? 'bg-cyber-500/20 text-cyber-400' : 'text-gray-400 hover:text-white'}`}
+                            className={`text-xs uppercase tracking-widest transition-colors ${activeTab === 'canvas' ? 'text-cyber-400' : 'text-gray-600 hover:text-gray-400'}`}
                         >
-                            Command Canvas
+                            Canvas
                         </button>
                         <button
                             onClick={() => setActiveTab('forensic')}
-                            className={`px-3 py-1 text-sm rounded transition-colors ${activeTab === 'forensic' ? 'bg-cyber-500/20 text-cyber-400' : 'text-gray-400 hover:text-white'}`}
+                            className={`text-xs uppercase tracking-widest transition-colors ${activeTab === 'forensic' ? 'text-cyber-400' : 'text-gray-600 hover:text-gray-400'}`}
                         >
-                            Forensic Vault
+                            Forensic
                         </button>
                     </div>
                 </div>
-                <div className="flex gap-2 items-center">
+                <div className="flex items-center gap-4">
                     {deployStatus && (
-                        <span className={`text-xs ${deployStatus.includes('✅') ? 'text-green-400' : 'text-red-400'}`}>
+                        <span className={`text-xs ${deployStatus.includes('✅') ? 'text-cyber-400' : 'text-red-400'}`}>
                             {deployStatus}
                         </span>
                     )}
@@ -101,29 +99,31 @@ function App() {
                         <>
                             <button
                                 onClick={() => setShowPreview(true)}
-                                className="px-4 py-1 bg-gray-800 hover:bg-gray-700 rounded text-sm transition-colors"
+                                className="text-xs text-gray-500 hover:text-gray-300 transition-colors uppercase tracking-widest"
                             >
-                                Validate &amp; Preview
+                                Preview
                             </button>
                             <button
                                 onClick={handleDeploy}
-                                className="px-4 py-1 bg-cyber-500 hover:bg-cyber-600 text-black font-semibold rounded text-sm transition-colors"
+                                className="text-xs bg-cyber-400/10 border border-cyber-400/30 text-cyber-400 px-4 py-1.5 rounded-lg hover:bg-cyber-400/20 transition-all uppercase tracking-widest"
                             >
-                                Deploy Rule
+                                Deploy
                             </button>
                         </>
                     )}
                 </div>
             </header>
 
-            <div className="flex-1 overflow-hidden relative z-10">
+            {/* Content with fluid morphing */}
+            <div className="flex-1 relative z-10">
                 <AnimatePresence mode="wait">
                     {activeTab === 'canvas' ? (
                         <motion.div
                             key="canvas"
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -10 }}
+                            initial={{ opacity: 0, filter: 'blur(4px)' }}
+                            animate={{ opacity: 1, filter: 'blur(0px)' }}
+                            exit={{ opacity: 0, filter: 'blur(4px)' }}
+                            transition={{ duration: 0.3 }}
                             className="flex h-full"
                         >
                             <NodePalette cameras={cameras} />
@@ -143,9 +143,10 @@ function App() {
                     ) : (
                         <motion.div
                             key="forensic"
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -10 }}
+                            initial={{ opacity: 0, filter: 'blur(4px)' }}
+                            animate={{ opacity: 1, filter: 'blur(0px)' }}
+                            exit={{ opacity: 0, filter: 'blur(4px)' }}
+                            transition={{ duration: 0.3 }}
                             className="h-full"
                         >
                             <ForensicVault />
@@ -155,10 +156,7 @@ function App() {
             </div>
 
             {showPreview && (
-                <RulePreview
-                    ruleName={ruleName}
-                    onClose={() => setShowPreview(false)}
-                />
+                <RulePreview ruleName={ruleName} onClose={() => setShowPreview(false)} />
             )}
         </div>
     );

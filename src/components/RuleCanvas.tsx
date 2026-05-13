@@ -35,13 +35,11 @@ export const RuleCanvas = () => {
             event.preventDefault();
             const raw = event.dataTransfer.getData('application/reactflow');
             if (!raw || !reactFlowInstance.current) return;
-
             const { nodeType, data } = JSON.parse(raw);
             const position = reactFlowInstance.current.screenToFlowPosition({
                 x: event.clientX,
                 y: event.clientY,
             });
-
             const newNode: Node<CustomNodeData> = {
                 id: uuidv4(),
                 type: nodeType,
@@ -65,12 +63,15 @@ export const RuleCanvas = () => {
             onDragOver={onDragOver}
             onDrop={onDrop}
             fitView
-            className="bg-gray-950"
+            className="bg-transparent"
             deleteKeyCode={['Backspace', 'Delete']}
-            defaultEdgeOptions={{ animated: true, style: { stroke: '#14b8a6', strokeWidth: 2 } }}
+            defaultEdgeOptions={{
+                animated: true,
+                style: { stroke: 'rgba(34, 211, 238, 0.4)', strokeWidth: 1.5 },
+            }}
         >
-            <Background color="#1f2937" gap={20} />
-            <Controls className="!bg-gray-800 !border-gray-700 !fill-gray-300" />
+            <Background color="rgba(34, 211, 238, 0.05)" gap={24} size={0.5} />
+            <Controls className="!bg-transparent !border-none !fill-gray-600" />
         </ReactFlow>
     );
 };

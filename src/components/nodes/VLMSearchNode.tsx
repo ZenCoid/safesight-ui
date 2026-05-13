@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Handle, Position, NodeProps } from 'reactflow';
 import { VLMSearchNodeData } from '../../types';
 import axios from 'axios';
+import { ReflectiveCard } from '../effects/ReflectiveCard';
 
 export const VLMSearchNode = ({ data }: NodeProps<VLMSearchNodeData>) => {
     const [query, setQuery] = useState(data.query || '');
@@ -36,63 +37,59 @@ export const VLMSearchNode = ({ data }: NodeProps<VLMSearchNodeData>) => {
     };
 
     return (
-        <div className={`glass-panel rounded-lg p-4 min-w-[260px] shadow-lg ${isProcessing ? 'neon-glow' : ''}`}>
+        <ReflectiveCard className={`p-4 min-w-[260px] ${isProcessing ? 'neon-flow-border' : ''}`}>
             <Handle type="target" position={Position.Left} className="!bg-cyber-400" />
             <div className="flex flex-col gap-3">
-                <span className="text-xs text-cyber-400 uppercase tracking-wider font-semibold">
+                <span className="text-xs text-cyber-400 uppercase tracking-widest font-medium">
                     🧠 VLM Search
                 </span>
-
                 <div className="flex flex-col gap-1">
-                    <label className="text-xs text-gray-400">Natural Language Query</label>
+                    <label className="text-[10px] text-gray-500 uppercase tracking-wider">Query</label>
                     <textarea
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
                         placeholder="Alert me if a person in a red shirt appears"
-                        className="bg-gray-900 border border-gray-700 rounded px-2 py-1 text-sm text-gray-200 resize-none h-16"
+                        className="bg-transparent border-b border-gray-700 focus:border-cyber-400 outline-none px-0 py-1 text-sm text-gray-200 resize-none h-16 placeholder:text-gray-600"
                     />
                 </div>
-
                 <div className="flex flex-col gap-1">
-                    <label className="text-xs text-gray-400">Alert Channel</label>
+                    <label className="text-[10px] text-gray-500 uppercase tracking-wider">Channel</label>
                     <select
                         value={channel}
                         onChange={(e) => setChannel(e.target.value)}
-                        className="bg-gray-900 border border-gray-700 rounded px-2 py-1 text-sm text-gray-200"
+                        className="bg-transparent border-b border-gray-700 focus:border-cyber-400 outline-none px-0 py-1 text-sm text-gray-200"
                     >
                         <option value="whatsapp">WhatsApp</option>
                         <option value="email">Email</option>
                     </select>
                 </div>
-
                 <div className="flex flex-col gap-1">
-                    <label className="text-xs text-gray-400">Check Interval (frames)</label>
+                    <label className="text-[10px] text-gray-500 uppercase tracking-wider">Interval (frames)</label>
                     <input
                         type="number"
                         value={interval}
                         onChange={(e) => setInterval(Number(e.target.value))}
                         min={1}
-                        className="bg-gray-900 border border-gray-700 rounded px-2 py-1 text-sm text-gray-200 w-24"
+                        className="bg-transparent border-b border-gray-700 focus:border-cyber-400 outline-none px-0 py-1 text-sm text-gray-200 w-20"
                     />
                 </div>
-
                 <div className="flex flex-col gap-1">
-                    <label className="text-xs text-gray-400">Test Image</label>
+                    <label className="text-[10px] text-gray-500 uppercase tracking-wider">Test Image</label>
                     <input
                         type="file"
                         accept="image/*"
                         onChange={handleUpload}
                         disabled={uploading}
-                        className="text-xs text-gray-300"
+                        className="text-xs text-gray-500 file:mr-2 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-xs file:font-medium file:bg-cyber-400/10 file:text-cyber-400 hover:file:bg-cyber-400/20"
                     />
                     {uploading && <span className="text-xs text-cyber-400">Uploading…</span>}
                     {imageKey && (
-                        <div className="text-xs text-gray-500 truncate">
+                        <div className="text-[10px] text-gray-500 truncate font-mono">
                             ✅ {imageKey}
                         </div>
                     )}
                 </div>
             </div>
-        </div>
+        </ReflectiveCard>
     );
 };

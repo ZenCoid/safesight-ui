@@ -14,15 +14,37 @@
     --color-security-950: #020617;
 }
 
-/* Frosted glass utility */
-.glass-panel {
-    background: rgba(15, 23, 42, 0.6);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(34, 211, 238, 0.15);
+/* Ultra‑Glassmorphism panel */
+.ultra-glass {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 0.5px solid rgba(34, 211, 238, 0.2);
 }
 
-/* Scanline overlay for camera feeds */
+/* Aurora gradient background (animated) */
+.aurora-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background: radial-gradient(ellipse at 20% 50%, rgba(34, 211, 238, 0.06) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(6, 182, 212, 0.04) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 80%, rgba(34, 211, 238, 0.05) 0%, transparent 50%);
+    animation: aurora-shift 20s ease-in-out infinite alternate;
+    pointer-events: none;
+}
+
+@keyframes aurora-shift {
+    0% {
+        transform: scale(1) translate(0, 0);
+    }
+
+    100% {
+        transform: scale(1.05) translate(1%, 1%);
+    }
+}
+
+/* Scanline overlay */
 .scanline::after {
     content: '';
     position: absolute;
@@ -39,14 +61,14 @@
     z-index: 10;
 }
 
-/* Live red-dot pulse */
+/* Live red‑dot */
 .live-dot {
     width: 8px;
     height: 8px;
     background: #ef4444;
     border-radius: 50%;
     box-shadow: 0 0 8px #ef4444;
-    animation: pulse-red 1.5s infinite;
+    animation: pulse-red 2s infinite;
 }
 
 @keyframes pulse-red {
@@ -58,25 +80,24 @@
     }
 
     50% {
-        opacity: 0.5;
+        opacity: 0.6;
         transform: scale(1.3);
     }
 }
 
-/* Neon glow for processing nodes */
-.neon-glow {
-    box-shadow: 0 0 15px rgba(34, 211, 238, 0.5);
-    animation: glow-pulse 2s infinite;
+/* Flowing neon border – used on active nodes */
+.neon-flow-border {
+    border: 1px solid transparent;
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+    background-image: linear-gradient(#0f172a, #0f172a), conic-gradient(from 0deg, #22d3ee, #0891b2, #06b6d4, #22d3ee);
+    animation: rotate-neon 4s linear infinite;
 }
 
-@keyframes glow-pulse {
-
-    0%,
+@keyframes rotate-neon {
     100% {
-        box-shadow: 0 0 15px rgba(34, 211, 238, 0.5);
-    }
-
-    50% {
-        box-shadow: 0 0 30px rgba(34, 211, 238, 0.9);
+        background-image: linear-gradient(#0f172a, #0f172a), conic-gradient(from 360deg, #22d3ee, #0891b2, #06b6d4, #22d3ee);
     }
 }
+
+/* Reflective card tilt (applied via motion) – no extra CSS needed */

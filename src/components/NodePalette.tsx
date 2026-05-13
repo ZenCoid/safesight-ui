@@ -11,11 +11,11 @@ export const NodePalette = ({ cameras }: Props) => {
     };
 
     return (
-        <aside className="w-64 bg-gray-900 border-r border-gray-800 p-4 flex flex-col gap-4 shrink-0 overflow-y-auto">
-            <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">Nodes</h2>
+        <aside className="w-64 ultra-glass border-r border-gray-800/50 p-5 flex flex-col gap-6 shrink-0 overflow-y-auto z-20">
+            <h2 className="text-[10px] text-gray-600 uppercase tracking-[0.2em]">Nodes</h2>
 
-            <div className="space-y-2">
-                <h3 className="text-xs text-gray-500">Cameras</h3>
+            <div className="space-y-3">
+                <h3 className="text-[10px] text-gray-700 uppercase tracking-widest">Cameras</h3>
                 {cameras.map(cam => (
                     <div
                         key={cam.id}
@@ -25,30 +25,29 @@ export const NodePalette = ({ cameras }: Props) => {
                             label: cam.name,
                             snapshotUrl: undefined,
                         })}
-                        className="bg-gray-800 border border-gray-700 p-2 rounded cursor-grab hover:border-safesight-500 transition-colors text-sm active:cursor-grabbing"
+                        className="text-sm text-gray-400 hover:text-cyber-400 transition-colors cursor-grab active:cursor-grabbing py-1 border-b border-transparent hover:border-cyber-400/20"
                     >
-                        <span className="mr-1">📷</span> {cam.name}
+                        {cam.name}
                     </div>
                 ))}
             </div>
 
             <div>
-                <h3 className="text-xs text-gray-500 mb-2">Detectors</h3>
+                <h3 className="text-[10px] text-gray-700 uppercase tracking-widest mb-2">Detectors</h3>
                 <div
                     draggable
                     onDragStart={(e) => onDragStart(e, 'detector', { modules: ['person', 'helmet'] })}
-                    className="bg-gray-800 border border-gray-700 p-2 rounded cursor-grab hover:border-purple-500 transition-colors text-sm mb-1 active:cursor-grabbing"
+                    className="text-sm text-gray-400 hover:text-purple-400 transition-colors cursor-grab py-1"
                 >
-                    🧠 Person + Helmet
+                    Person + Helmet
                 </div>
                 <div
                     draggable
                     onDragStart={(e) => onDragStart(e, 'detector', { modules: ['fire'] })}
-                    className="bg-gray-800 border border-gray-700 p-2 rounded cursor-grab hover:border-purple-500 transition-colors text-sm mb-1 active:cursor-grabbing"
+                    className="text-sm text-gray-400 hover:text-purple-400 transition-colors cursor-grab py-1"
                 >
-                    🔥 Fire
+                    Fire
                 </div>
-                {/* VLM Search node */}
                 <div
                     draggable
                     onDragStart={(e) => onDragStart(e, 'vlmSearch', {
@@ -56,27 +55,27 @@ export const NodePalette = ({ cameras }: Props) => {
                         channel: 'whatsapp',
                         intervalFrames: 10,
                     })}
-                    className="bg-gray-800 border border-cyan-400 p-2 rounded cursor-grab hover:border-cyan-300 transition-colors text-sm mb-1 active:cursor-grabbing"
+                    className="text-sm text-gray-400 hover:text-cyber-400 transition-colors cursor-grab py-1"
                 >
-                    🧪 VLM Search
+                    VLM Search
                 </div>
             </div>
 
             <div>
-                <h3 className="text-xs text-gray-500 mb-2">Actions</h3>
+                <h3 className="text-[10px] text-gray-700 uppercase tracking-widest mb-2">Actions</h3>
                 <div
                     draggable
                     onDragStart={(e) => onDragStart(e, 'action', { channels: ['whatsapp'] })}
-                    className="bg-gray-800 border border-gray-700 p-2 rounded cursor-grab hover:border-amber-500 transition-colors text-sm mb-1 active:cursor-grabbing"
+                    className="text-sm text-gray-400 hover:text-amber-400 transition-colors cursor-grab py-1"
                 >
-                    📱 WhatsApp
+                    WhatsApp
                 </div>
                 <div
                     draggable
                     onDragStart={(e) => onDragStart(e, 'action', { channels: ['email'] })}
-                    className="bg-gray-800 border border-gray-700 p-2 rounded cursor-grab hover:border-amber-500 transition-colors text-sm mb-1 active:cursor-grabbing"
+                    className="text-sm text-gray-400 hover:text-amber-400 transition-colors cursor-grab py-1"
                 >
-                    ✉️ Email
+                    Email
                 </div>
             </div>
         </aside>
