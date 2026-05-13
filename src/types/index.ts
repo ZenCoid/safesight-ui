@@ -12,7 +12,14 @@ export interface ActionNodeData {
     channels: string[];
 }
 
-export type CustomNodeData = CameraNodeData | DetectorNodeData | ActionNodeData;
+export interface VLMSearchNodeData {
+    query: string;
+    channel: string;        // "whatsapp" | "email"
+    intervalFrames: number;
+    imageKey?: string;       // MinIO object key of the uploaded test image
+}
+
+export type CustomNodeData = CameraNodeData | DetectorNodeData | ActionNodeData | VLMSearchNodeData;
 
 export interface ZoneData {
     cameraId: string;

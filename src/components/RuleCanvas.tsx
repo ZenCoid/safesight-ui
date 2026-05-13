@@ -9,6 +9,7 @@ import 'reactflow/dist/style.css';
 import { CameraNode } from './nodes/CameraNode';
 import { DetectorNode } from './nodes/DetectorNode';
 import { ActionNode } from './nodes/ActionNode';
+import { VLMSearchNode } from './nodes/VLMSearchNode';
 import { useFlowStore } from '../store/flowStore';
 import { CustomNodeData } from '../types';
 import { v4 as uuidv4 } from 'uuid';
@@ -17,6 +18,7 @@ const nodeTypes = {
     camera: CameraNode,
     detector: DetectorNode,
     action: ActionNode,
+    vlmSearch: VLMSearchNode,
 };
 
 export const RuleCanvas = () => {

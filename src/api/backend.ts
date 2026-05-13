@@ -50,5 +50,15 @@ export interface EscalationLevel {
     unacknowledged_seconds?: number;
 }
 
+export interface PinnedSearchRequest {
+    query: string;
+    channel: string;
+    interval_frames: number;
+    minio_keys: string[];
+    camera_id?: string;
+    rule_id?: string;
+}
+
 export const getCameras = () => api.get<Camera[]>('/cameras/');
 export const createRule = (rule: RuleDefinition) => api.post('/rules/', rule);
+export const createPinned = (payload: PinnedSearchRequest) => api.post('/v1/pinned', payload);

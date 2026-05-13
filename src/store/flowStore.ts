@@ -9,18 +9,21 @@ import {
     addEdge,
     Connection,
 } from 'reactflow';
-import { CameraNodeData, DetectorNodeData, ActionNodeData, ZoneData } from '../types';
+import { CameraNodeData, DetectorNodeData, ActionNodeData, VLMSearchNodeData, ZoneData } from '../types';
+
+// Use the combined CustomNodeData type so all node types are accepted
+type AllNodeData = CameraNodeData | DetectorNodeData | ActionNodeData | VLMSearchNodeData;
 
 interface FlowState {
-    nodes: Node<CameraNodeData | DetectorNodeData | ActionNodeData>[];
+    nodes: Node<AllNodeData>[];
     edges: Edge[];
     zones: ZoneData[];
     selectedCameraForZone: string | null;
 
     onNodesChange: OnNodesChange;
     onEdgesChange: OnEdgesChange;
-    addNode: (node: Node<CameraNodeData | DetectorNodeData | ActionNodeData>) => void;
-    setNodes: (nodes: Node<CameraNodeData | DetectorNodeData | ActionNodeData>[]) => void;
+    addNode: (node: Node<AllNodeData>) => void;
+    setNodes: (nodes: Node<AllNodeData>[]) => void;
     setEdges: (edges: Edge[]) => void;
     onConnect: (connection: Connection) => void;
     addZone: (zone: ZoneData) => void;

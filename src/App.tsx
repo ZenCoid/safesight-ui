@@ -4,9 +4,10 @@ import { RuleCanvas } from './components/RuleCanvas';
 import { NodePalette } from './components/NodePalette';
 import { RulePreview } from './components/RulePreview';
 import { ZoneEditor } from './components/ZoneEditor';
-import { getCameras, Camera, createRule } from './api/backend';
+import { getCameras, Camera, createRule, createPinned } from './api/backend';
 import { useFlowStore } from './store/flowStore';
 import { generateRule } from './utils/ruleGenerator';
+import { VLMSearchNodeData } from './types';
 
 function App() {
     const [cameras, setCameras] = useState<Camera[]>([]);
@@ -22,6 +23,42 @@ function App() {
     }, []);
 
     const handleDeploy = async () => {
+        const { nodes, edges } = useFlowStore.getState();
+
+        // Check if a VLMSearchNode is present and connected to a camera
+        const vlmSearchNode = nodes.find(n => n.type === 'vlmSearch');
+        if (vlmSearchNode) {
+            const vlmData = vlmSearchNode.data as VLMSearchNodeData;
+            const connectedCameraEdges = edges.filter(e => e.target === vlmSearchNode.id);
+            const connectedCameraIds = connectedCameraEdges
+                .map(e => {
+                    const camNode = nodes.find(n => n.id === e.source && n.type === 'camera');
+                    return camNode ? (camNode.data as any).cameraId : null;
+                })
+                .filter(Boolean) as string[];
+
+            // Use the uploaded image key, or fallback to an empty array
+            const imageKey = vlmData.imageKey?.trim() || '';
+            const keys = imageKey ? [imageKey] : [];
+
+            try {
+                await createPinned({
+                    query: vlmData.query,
+                    channel: vlmData.channel,
+                    interval_frames: vlmData.intervalFrames,
+                    minio_keys: keys,
+                    camera_id: connectedCameraIds[0] || undefined,
+                    rule_id: undefined,
+                });
+                setDeployStatus('✅ Pinned search activated!');
+            } catch (err) {
+                setDeployStatus('❌ Error deploying pinned search.');
+                console.error(err);
+            }
+            return;
+        }
+
+        // Standard rule deployment
         try {
             const rule = generateRule(ruleName);
             await createRule(rule);

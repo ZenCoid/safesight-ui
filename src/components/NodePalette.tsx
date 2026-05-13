@@ -48,6 +48,18 @@ export const NodePalette = ({ cameras }: Props) => {
                 >
                     🔥 Fire
                 </div>
+                {/* VLM Search node */}
+                <div
+                    draggable
+                    onDragStart={(e) => onDragStart(e, 'vlmSearch', {
+                        query: '',
+                        channel: 'whatsapp',
+                        intervalFrames: 10,
+                    })}
+                    className="bg-gray-800 border border-cyan-400 p-2 rounded cursor-grab hover:border-cyan-300 transition-colors text-sm mb-1 active:cursor-grabbing"
+                >
+                    🧪 VLM Search
+                </div>
             </div>
 
             <div>
