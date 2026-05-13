@@ -38,7 +38,7 @@ export const RulePreview = ({ ruleName, onClose }: Props) => {
 
     return (
         <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-50">
-            <div className="bg-gray-800 glass-panel rounded-lg p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto shadow-2xl">
+            <div className="ultra-glass rounded-lg p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto shadow-2xl">
                 <div className="flex justify-between items-center mb-4">
                     <h2 className="text-xl font-bold text-cyber-400">Rule Preview</h2>
                     <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">✕</button>
