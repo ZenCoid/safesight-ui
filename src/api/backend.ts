@@ -15,23 +15,6 @@ export interface Camera {
     updated_at: string;
 }
 
-export interface RuleDefinition {
-    rule_id: string;
-    rule_name: string;
-    version: string;
-    enabled: boolean;
-    cameras: string[];
-    detection_modules: string[];
-    zones: PolygonZone[];
-    confidence_threshold: number;
-    min_duration_seconds: number;
-    cooldown_seconds: number;
-    schedule: ScheduleWindow | null;
-    escalation_levels: EscalationLevel[];
-    multi_camera_links: any[];
-    condition: string;
-}
-
 export interface PolygonZone {
     name: string;
     points: number[][]; // normalized 0‑1
@@ -48,6 +31,30 @@ export interface EscalationLevel {
     channels: string[];
     delay_seconds: number;
     unacknowledged_seconds?: number;
+}
+
+export interface MultiCameraLink {
+    trigger_camera_id: string;
+    target_camera_id: string;
+    action: 'increase_sensitivity' | 'enable_rule' | 'disable_rule';
+    rule_ids?: string[];
+}
+
+export interface RuleDefinition {
+    rule_id: string;
+    rule_name: string;
+    version: string;
+    enabled: boolean;
+    cameras: string[];
+    detection_modules: string[];
+    zones: PolygonZone[];
+    confidence_threshold: number;
+    min_duration_seconds: number;
+    cooldown_seconds: number;
+    schedule: ScheduleWindow | null;
+    escalation_levels: EscalationLevel[];
+    multi_camera_links: MultiCameraLink[];   // now correctly typed
+    condition: string;
 }
 
 export interface PinnedSearchRequest {
