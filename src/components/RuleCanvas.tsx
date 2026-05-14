@@ -71,15 +71,9 @@ export const RuleCanvas = () => {
             connectionLineStyle={{ stroke: '#94a3b8', strokeWidth: 2, strokeDasharray: '5 5' }}
             defaultEdgeOptions={{
                 animated: true,
-                style: { stroke: 'url(#edge-gradient)', strokeWidth: 1.5 },
+                style: { stroke: '#e2e8f0', strokeWidth: 1.5 },
             }}
         >
-            <defs>
-                <linearGradient id="edge-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#e2e8f0" />
-                    <stop offset="100%" stopColor="#fb7185" />
-                </linearGradient>
-            </defs>
             <Background color="rgba(226, 232, 240, 0.03)" gap={24} size={0.5} />
             <Controls className="!bg-transparent !border-none !fill-slate-600" />
         </ReactFlow>

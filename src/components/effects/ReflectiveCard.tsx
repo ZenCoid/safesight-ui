@@ -31,6 +31,7 @@ export const ReflectiveCard = ({ children, className = '' }: Props) => {
     return (
         <div
             ref={containerRef}
+            className="relative"
             onMouseMove={handleMouseMove}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
