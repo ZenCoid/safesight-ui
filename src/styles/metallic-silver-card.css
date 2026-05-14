@@ -1,81 +1,95 @@
-/* ==========================================================================
-   Metallic Silver Border Card
-   Adapted from the silver electric border template
-   ========================================================================== */
+/* ========================================================================
+   EXACT CSS from the silver electric border template
+   Scoped under .metallic-card-root
+   ======================================================================== */
 
-.metallic-card-wrapper {
-    position: relative;
+.metallic-card-root {
+    --electric-border-color: #c0c0c0;
+    --electric-light-color: oklch(from var(--electric-border-color) l c h);
+    --gradient-color: oklch(from var(--electric-border-color) 0.3 calc(c / 2) h / 0.4);
+    --color-neutral-900: oklch(0.185 0 0);
+    --silver-bright: #e8e8e8;
+    --silver-medium: #a8a8a8;
+    --silver-dark: #808080;
     display: inline-block;
+}
+
+/* SVG positioning */
+.metallic-svg {
+    position: absolute;
+}
+
+/* Card container */
+.metallic-card-container {
     padding: 2px;
     border-radius: 24px;
-    background: linear-gradient(-30deg,
-            var(--msc-gradient),
-            transparent,
-            var(--msc-gradient)),
-        linear-gradient(to bottom,
-            var(--msc-bg-dark),
-            var(--msc-bg-dark));
-    --msc-bg-dark: oklch(0.185 0 0);
-    --msc-border-color: #c0c0c0;
-    --msc-gradient: oklch(from var(--msc-border-color) 0.3 calc(c / 2) h / 0.4);
-    --msc-light: oklch(from var(--msc-border-color) l c h);
-    --msc-bright: #e8e8e8;
-    --msc-medium: #a8a8a8;
-    --msc-dark: #808080;
-}
-
-.metallic-card-inner {
     position: relative;
+    background: linear-gradient(-30deg, var(--gradient-color), transparent, var(--gradient-color)),
+        linear-gradient(to bottom, var(--color-neutral-900), var(--color-neutral-900));
 }
 
-.metallic-card-border-outer {
+/* Inner container */
+.metallic-inner-container {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    right: 2px;
+    bottom: 2px;
+}
+
+/* Border layers */
+.metallic-border-outer {
     border: 2px solid rgba(192, 192, 192, 0.5);
     border-radius: 24px;
     padding-right: 4px;
     padding-bottom: 4px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
 }
 
-.metallic-card-main {
+.metallic-main-card {
+    width: 100%;
+    height: 100%;
     border-radius: 24px;
-    border: 2px solid var(--msc-border-color);
+    border: 2px solid var(--electric-border-color);
     margin-top: -4px;
     margin-left: -4px;
     filter: url(#turbulent-displace);
-    position: relative;
-    background: var(--msc-bg-dark);
-    min-width: 140px;
-    min-height: 60px;
-    overflow: hidden;
+    background: var(--color-neutral-900);
 }
 
-/* Glow layers */
-.metallic-card-glow-1 {
+/* Glow effects */
+.metallic-glow-layer-1 {
     border: 2px solid rgba(192, 192, 192, 0.6);
     border-radius: 24px;
+    width: 100%;
+    height: 100%;
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
     filter: blur(1px);
-    pointer-events: none;
 }
 
-.metallic-card-glow-2 {
-    border: 2px solid var(--msc-light);
+.metallic-glow-layer-2 {
+    border: 2px solid var(--electric-light-color);
     border-radius: 24px;
+    width: 100%;
+    height: 100%;
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
     filter: blur(4px);
-    pointer-events: none;
 }
 
 /* Overlay effects */
-.metallic-card-overlay-1,
-.metallic-card-overlay-2 {
+.metallic-overlay-1 {
     position: absolute;
     width: 100%;
     height: 100%;
@@ -84,24 +98,31 @@
     right: 0;
     bottom: 0;
     border-radius: 24px;
+    opacity: 1;
     mix-blend-mode: overlay;
     transform: scale(1.1);
     filter: blur(16px);
-    pointer-events: none;
-}
-
-.metallic-card-overlay-1 {
-    opacity: 1;
     background: linear-gradient(-30deg, white, transparent 30%, transparent 70%, white);
 }
 
-.metallic-card-overlay-2 {
+.metallic-overlay-2 {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 24px;
     opacity: 0.5;
+    mix-blend-mode: overlay;
+    transform: scale(1.1);
+    filter: blur(16px);
     background: linear-gradient(-30deg, white, transparent 30%, transparent 70%, white);
 }
 
 /* Background glow */
-.metallic-card-bg-glow {
+.metallic-background-glow {
     position: absolute;
     width: 100%;
     height: 100%;
@@ -114,25 +135,18 @@
     transform: scale(1.1);
     opacity: 0.3;
     z-index: -1;
-    pointer-events: none;
-    background: linear-gradient(-30deg, var(--msc-bright), transparent, var(--msc-border-color));
+    background: linear-gradient(-30deg, var(--silver-bright), transparent, var(--electric-border-color));
 }
 
-/* Content layer sits above everything */
-.metallic-card-content {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
+/* Content container */
+.metallic-content-container {
+    position: relative;
     z-index: 5;
+    border-radius: 22px;
+    background: var(--color-neutral-900);
 }
 
-/* Ensure React Flow handles are above */
-.metallic-card-wrapper .react-flow__handle {
+/* React Flow handles */
+.metallic-card-root .react-flow__handle {
     z-index: 20 !important;
 }
