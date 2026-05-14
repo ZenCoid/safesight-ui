@@ -12,23 +12,9 @@ export const MetallicSilverCard: React.FC<MetallicSilverCardProps> = ({
     style,
 }) => {
     return (
-        <div className={`metallic-card-root ${className}`} style={style}>
-            {/* No inline SVG – filter is in index.html */}
-
-            <div className="metallic-card-container">
-                <div className="metallic-inner-container">
-                    <div className="metallic-border-outer">
-                        <div className="metallic-main-card" />
-                    </div>
-                    <div className="metallic-glow-layer-1" />
-                    <div className="metallic-glow-layer-2" />
-                </div>
-                <div className="metallic-overlay-1" />
-                <div className="metallic-overlay-2" />
-                <div className="metallic-background-glow" />
-                <div className="metallic-content-container">
-                    {children}
-                </div>
+        <div className={`static-silver-card ${className}`} style={style}>
+            <div className="static-silver-card-content">
+                {children}
             </div>
         </div>
     );

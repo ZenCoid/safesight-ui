@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Handle, Position, NodeProps } from 'reactflow';
-import { BrainCircuit, AlertTriangle } from 'lucide-react';
+import { BrainCircuit } from 'lucide-react';
 import { VLMSearchNodeData } from '../../types';
-import { useFlowStore } from '../../store/flowStore';
 import axios from 'axios';
 import { MetallicSilverCard } from '../effects/MetallicSilverCard';
 import { ProcessingDots } from '../effects/ProcessingDots';
@@ -14,8 +13,6 @@ export const VLMSearchNode = ({ id, data }: NodeProps<VLMSearchNodeData>) => {
     const [imageKey, setImageKey] = useState(data.imageKey || '');
     const [uploading, setUploading] = useState(false);
     const isProcessing = (data as any).isProcessing ?? false;
-    const warningNodeIds = useFlowStore(s => s.warningNodeIds);
-    const hasWarning = warningNodeIds.has(id);
 
     useEffect(() => {
         data.query = query;
@@ -42,12 +39,7 @@ export const VLMSearchNode = ({ id, data }: NodeProps<VLMSearchNodeData>) => {
     };
 
     return (
-        <MetallicSilverCard className={`p-0 ${hasWarning ? 'ring-1 ring-red-500/50' : ''}`} style={{ minWidth: 270 }}>
-            {hasWarning && (
-                <div className="absolute top-1.5 right-1.5 z-30 text-red-400" title="VLM Search needs a camera feed">
-                    <AlertTriangle className="w-3.5 h-3.5" />
-                </div>
-            )}
+        <MetallicSilverCard className="p-0" style={{ minWidth: 270 }}>
             <Handle
                 type="target"
                 position={Position.Left}

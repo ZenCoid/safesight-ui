@@ -1,14 +1,12 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Handle, Position, NodeProps } from 'reactflow';
-import { Camera, AlertTriangle } from 'lucide-react';
+import { Camera } from 'lucide-react';
 import { CameraNodeData } from '../../types';
 import { useFlowStore } from '../../store/flowStore';
 import { MetallicSilverCard } from '../effects/MetallicSilverCard';
 
 export const CameraNode = ({ id, data }: NodeProps<CameraNodeData>) => {
     const setSelected = useFlowStore(s => s.setSelectedCameraForZone);
-    const warningNodeIds = useFlowStore(s => s.warningNodeIds);
-    const hasWarning = warningNodeIds.has(id);
     const [showPreview, setShowPreview] = useState(false);
     const [detections, setDetections] = useState<any[]>([]);
     const imgRef = useRef<HTMLImageElement>(null);
@@ -72,12 +70,7 @@ export const CameraNode = ({ id, data }: NodeProps<CameraNodeData>) => {
     }, [drawOverlay]);
 
     return (
-        <MetallicSilverCard className={`p-0 ${hasWarning ? 'ring-1 ring-red-500/50' : ''}`} style={{ minWidth: 210 }}>
-            {hasWarning && (
-                <div className="absolute top-1.5 right-1.5 z-30 text-red-400" title="Disconnected – connect to a detector or action">
-                    <AlertTriangle className="w-3.5 h-3.5" />
-                </div>
-            )}
+        <MetallicSilverCard className="p-0" style={{ minWidth: 210 }}>
             <Handle
                 type="source"
                 position={Position.Right}
