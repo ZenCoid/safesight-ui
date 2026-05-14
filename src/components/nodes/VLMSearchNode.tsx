@@ -4,7 +4,7 @@ import { BrainCircuit } from 'lucide-react';
 import { VLMSearchNodeData } from '../../types';
 import axios from 'axios';
 import { ReflectiveCard } from '../effects/ReflectiveCard';
-import { DecryptText } from '../effects/DecryptText';
+import { ProcessingDots } from '../effects/ProcessingDots';
 
 export const VLMSearchNode = ({ data }: NodeProps<VLMSearchNodeData>) => {
     const [query, setQuery] = useState(data.query || '');
@@ -45,6 +45,7 @@ export const VLMSearchNode = ({ data }: NodeProps<VLMSearchNodeData>) => {
                 <div className="flex items-center gap-2">
                     <BrainCircuit className="w-4 h-4 text-slate-400" />
                     <span className="text-xs text-slate-400 tracking-widest uppercase">VLM Search</span>
+                    <ProcessingDots active={isProcessing} />
                 </div>
                 <div className="flex flex-col gap-1">
                     <label className="text-[10px] text-slate-500 tracking-wider">QUERY</label>

@@ -9,6 +9,7 @@ import { RulePreview } from './components/RulePreview';
 import { ZoneEditor } from './components/ZoneEditor';
 import { ForensicVault } from './components/ForensicVault';
 import { DotGrid } from './components/effects/DotGrid';
+import { MagneticButton } from './components/effects/MagneticButton';
 import { getCameras, Camera, createRule, createPinned } from './api/backend';
 import { useFlowStore } from './store/flowStore';
 import { generateRule } from './utils/ruleGenerator';
@@ -36,7 +37,14 @@ function App() {
                 return cam ? (cam.data as any).cameraId : null;
             }).filter(Boolean) as string[];
             try {
-                await createPinned({ query: d.query, channel: d.channel, interval_frames: d.intervalFrames, minio_keys: d.imageKey ? [d.imageKey] : [], camera_id: camIds[0] || undefined, rule_id: undefined });
+                await createPinned({
+                    query: d.query,
+                    channel: d.channel,
+                    interval_frames: d.intervalFrames,
+                    minio_keys: d.imageKey ? [d.imageKey] : [],
+                    camera_id: camIds[0] || undefined,
+                    rule_id: undefined,
+                });
                 setDeployStatus('✅ Pinned search activated!');
             } catch (err) { setDeployStatus('❌ Error'); }
             return;
@@ -44,12 +52,12 @@ function App() {
         try {
             const rule = generateRule(ruleName);
             await createRule(rule);
-            setDeployStatus(`✅ Rule deployed`);
+            setDeployStatus('✅ Rule deployed');
         } catch (err) { setDeployStatus('❌ Error'); }
     };
 
     return (
-        <div className="h-screen flex flex-col bg-[#020202] text-slate-200 font-['Inter'] relative overflow-hidden">
+        <div className="h-screen flex flex-col bg-[#0a0a0f] text-slate-200 font-['Inter'] relative overflow-hidden">
             <DotGrid />
             <ConsoleChrome />
             <div className="flex flex-1 overflow-hidden">
@@ -57,17 +65,35 @@ function App() {
                 <main className="flex-1 relative z-10">
                     <AnimatePresence mode="wait">
                         {activeTab === 'canvas' ? (
-                            <motion.div key="canvas" initial={{ opacity: 0, filter: 'blur(4px)' }} animate={{ opacity: 1, filter: 'blur(0px)' }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className="flex h-full">
+                            <motion.div
+                                key="canvas"
+                                initial={{ opacity: 0, filter: 'blur(4px)' }}
+                                animate={{ opacity: 1, filter: 'blur(0px)' }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.2 }}
+                                className="flex h-full"
+                            >
                                 <NodePalette cameras={cameras} />
                                 <div className="flex-1 relative">
                                     <ReactFlowProvider><RuleCanvas /></ReactFlowProvider>
                                 </div>
                                 {selectedCameraForZone && (
-                                    <ZoneEditor cameraId={selectedCameraForZone} cameraName={cameras.find(c => c.id === selectedCameraForZone)?.name || ''} onClose={() => setSelectedCameraForZone(null)} />
+                                    <ZoneEditor
+                                        cameraId={selectedCameraForZone}
+                                        cameraName={cameras.find(c => c.id === selectedCameraForZone)?.name || ''}
+                                        onClose={() => setSelectedCameraForZone(null)}
+                                    />
                                 )}
                             </motion.div>
                         ) : (
-                            <motion.div key="forensic" initial={{ opacity: 0, filter: 'blur(4px)' }} animate={{ opacity: 1, filter: 'blur(0px)' }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className="h-full">
+                            <motion.div
+                                key="forensic"
+                                initial={{ opacity: 0, filter: 'blur(4px)' }}
+                                animate={{ opacity: 1, filter: 'blur(0px)' }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.2 }}
+                                className="h-full"
+                            >
                                 <ForensicVault />
                             </motion.div>
                         )}
@@ -75,9 +101,19 @@ function App() {
                 </main>
             </div>
             {activeTab === 'canvas' && (
-                <div className="absolute bottom-4 right-4 z-20 flex gap-2">
-                    <button onClick={() => setShowPreview(true)} className="px-3 py-1.5 bg-white/5 border border-slate-800 text-xs text-slate-400 rounded-lg hover:bg-white/10">Preview</button>
-                    <button onClick={handleDeploy} className="px-3 py-1.5 bg-rose-400/10 border border-rose-400/30 text-rose-400 text-xs rounded-lg hover:bg-rose-400/20">Deploy</button>
+                <div className="absolute bottom-6 right-6 z-20 flex gap-3">
+                    <MagneticButton
+                        onClick={() => setShowPreview(true)}
+                        className="px-4 py-2 bg-white/[0.04] border border-slate-800 text-xs text-slate-400 rounded-lg hover:bg-white/[0.08]"
+                    >
+                        Preview
+                    </MagneticButton>
+                    <MagneticButton
+                        onClick={handleDeploy}
+                        className="px-4 py-2 bg-teal-400/10 border border-teal-400/30 text-teal-400 text-xs rounded-lg hover:bg-teal-400/20"
+                    >
+                        Deploy
+                    </MagneticButton>
                 </div>
             )}
             {showPreview && <RulePreview ruleName={ruleName} onClose={() => setShowPreview(false)} />}

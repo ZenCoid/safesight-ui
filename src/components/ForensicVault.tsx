@@ -5,6 +5,8 @@ import { ReflectiveCard } from './effects/ReflectiveCard';
 import { ClickSpark } from './effects/ClickSpark';
 import { DecryptText } from './effects/DecryptText';
 import { BlurText } from './effects/BlurText';
+import { DotGrid } from './effects/DotGrid';
+import { MagneticButton } from './effects/MagneticButton';
 
 interface ForensicResult {
     minio_key: string;
@@ -33,7 +35,7 @@ export const ForensicVault = () => {
     };
 
     return (
-        <div className="p-8 w-full h-full bg-[#020202] text-slate-200 overflow-auto relative">
+        <div className="p-8 w-full h-full bg-[#0a0a0f] text-slate-200 overflow-auto relative">
             <div className="fixed inset-0 z-0 opacity-20">
                 <DotGrid />
             </div>
@@ -53,9 +55,9 @@ export const ForensicVault = () => {
                             </div>
                         )}
                     </div>
-                    <ClickSpark className="bg-white/5 border border-slate-800 text-slate-300 font-medium px-6 py-3 rounded-lg hover:bg-white/10 disabled:opacity-50">
+                    <MagneticButton onClick={handleSearch} className="bg-white/5 border border-slate-800 text-slate-300 font-medium px-6 py-3 rounded-lg hover:bg-white/10 disabled:opacity-50">
                         {loading ? 'Searching...' : 'Investigate'}
-                    </ClickSpark>
+                    </MagneticButton>
                 </div>
 
                 <div className="flex items-center gap-2 mb-8">
@@ -78,16 +80,16 @@ export const ForensicVault = () => {
                                     <img src={item.thumbnail_url} className="w-full h-48 object-cover" />
                                     <div className="p-5 flex flex-col flex-1">
                                         <p className="text-xs text-slate-500 mb-3 font-mono tracking-wider">{item.timestamp}</p>
-                                        <div className="text-sm text-rose-400 mb-4 leading-relaxed flex-1">
+                                        <div className="text-sm text-gold-400 mb-4 leading-relaxed flex-1">
                                             <DecryptText text={item.vlm_reasoning} />
                                         </div>
                                         <div className="flex items-center justify-between mb-4">
-                                            <span className={`text-xs px-2 py-0.5 rounded-full ${item.present ? 'bg-rose-400/10 text-rose-400' : 'bg-slate-800 text-slate-500'}`}>
+                                            <span className={`text-xs px-2 py-0.5 rounded-full ${item.present ? 'bg-gold-400/10 text-gold-400' : 'bg-slate-800 text-slate-500'}`}>
                                                 {item.present ? 'Match' : 'No Match'}
                                             </span>
-                                            <ClickSpark className="text-xs text-slate-400 hover:text-white transition-colors">
+                                            <MagneticButton onClick={() => window.open(item.thumbnail_url, '_blank')} className="text-xs text-slate-400 hover:text-white transition-colors px-3 py-1 rounded-lg">
                                                 Export Evidence
-                                            </ClickSpark>
+                                            </MagneticButton>
                                         </div>
                                         {item.image_hash && (
                                             <div className="border-t border-slate-800 pt-3 group">

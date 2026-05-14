@@ -12,14 +12,15 @@
     --color-gold-400: #fde047;
     --color-rose-400: #fb7185;
     --color-rose-500: #f43f5e;
+    --color-teal-400: #2dd4bf;
+    --color-steel-400: #94a3b8;
     --color-security-800: #1e293b;
     --color-security-900: #0f172a;
     --color-security-950: #020617;
 }
 
-/* Base */
 body {
-    background: #020202;
+    background: #0a0a0f;
     color: #e2e8f0;
     font-family: 'Inter', sans-serif;
     letter-spacing: 0.02em;
@@ -27,8 +28,8 @@ body {
 
 /* Machined hairline border */
 .border-machined {
-    border: 0.5px solid rgba(226, 232, 240, 0.12);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    border: 0.5px solid rgba(226, 232, 240, 0.10);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
 }
 
 /* Rose alert glow */
@@ -57,8 +58,8 @@ body {
     background: repeating-linear-gradient(0deg,
             transparent,
             transparent 2px,
-            rgba(255, 255, 255, 0.015) 2px,
-            rgba(255, 255, 255, 0.015) 4px);
+            rgba(255, 255, 255, 0.012) 2px,
+            rgba(255, 255, 255, 0.012) 4px);
     pointer-events: none;
     z-index: 10;
 }
@@ -87,10 +88,10 @@ body {
     }
 }
 
-/* Ultra‑Glass panel – used for overlays */
+/* Ultra‑Glass panel */
 .ultra-glass {
-    background: rgba(15, 23, 42, 0.6);
+    background: rgba(17, 17, 24, 0.7);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 0.5px solid rgba(226, 232, 240, 0.1);
+    border: 0.5px solid rgba(226, 232, 240, 0.08);
 }
