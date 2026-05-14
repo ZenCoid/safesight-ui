@@ -1,5 +1,11 @@
 import { useCallback, useRef } from 'react';
-import ReactFlow, { Background, Controls, ReactFlowInstance, Node } from 'reactflow';
+import ReactFlow, {
+    Background,
+    Controls,
+    ReactFlowInstance,
+    Node,
+    ConnectionMode,
+} from 'reactflow';
 import 'reactflow/dist/style.css';
 import { CameraNode } from './nodes/CameraNode';
 import { DetectorNode } from './nodes/DetectorNode';
@@ -60,9 +66,12 @@ export const RuleCanvas = () => {
             fitView
             className="bg-transparent"
             deleteKeyCode={['Backspace', 'Delete']}
+            connectionMode={ConnectionMode.Loose}
+            connectionRadius={40}
+            connectionLineStyle={{ stroke: '#94a3b8', strokeWidth: 2, strokeDasharray: '5 5' }}
             defaultEdgeOptions={{
                 animated: true,
-                style: { stroke: 'url(#edge-gradient)', strokeWidth: 1.2 },
+                style: { stroke: 'url(#edge-gradient)', strokeWidth: 1.5 },
             }}
         >
             <defs>

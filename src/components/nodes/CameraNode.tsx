@@ -71,8 +71,17 @@ export const CameraNode = ({ data }: NodeProps<CameraNodeData>) => {
 
     return (
         <ReflectiveCard className={`p-3 min-w-[210px] ${isProcessing ? 'glow-rose' : ''}`}>
-            <Handle type="source" position={Position.Right} className="!bg-slate-400" />
-            <div className="flex flex-col gap-2">
+            <Handle
+                type="source"
+                position={Position.Right}
+                className="!bg-slate-400 !w-4 !h-4 !border-2 !border-[#111118] !z-50 hover:!bg-teal-400 transition-colors"
+            />
+            <Handle
+                type="target"
+                position={Position.Left}
+                className="!bg-slate-400 !w-4 !h-4 !border-2 !border-[#111118] !z-50 hover:!bg-teal-400 transition-colors"
+            />
+            <div className="flex flex-col gap-2 relative z-10">
                 <div className="flex items-center gap-2">
                     <Camera className="w-4 h-4 text-slate-400" />
                     <span className="text-[10px] text-slate-500 tracking-widest uppercase">Camera</span>
@@ -99,7 +108,6 @@ export const CameraNode = ({ data }: NodeProps<CameraNodeData>) => {
                     Edit Zones
                 </button>
             </div>
-            <Handle type="target" position={Position.Left} />
         </ReflectiveCard>
     );
 };

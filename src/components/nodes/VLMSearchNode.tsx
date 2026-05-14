@@ -40,8 +40,12 @@ export const VLMSearchNode = ({ data }: NodeProps<VLMSearchNodeData>) => {
 
     return (
         <ReflectiveCard className={`p-4 min-w-[270px] ${isProcessing ? 'glow-rose' : ''}`}>
-            <Handle type="target" position={Position.Left} className="!bg-slate-400" />
-            <div className="flex flex-col gap-3">
+            <Handle
+                type="target"
+                position={Position.Left}
+                className="!bg-slate-400 !w-4 !h-4 !border-2 !border-[#111118] !z-50 hover:!bg-teal-400 transition-colors"
+            />
+            <div className="flex flex-col gap-3 relative z-10">
                 <div className="flex items-center gap-2">
                     <BrainCircuit className="w-4 h-4 text-slate-400" />
                     <span className="text-xs text-slate-400 tracking-widest uppercase">VLM Search</span>
