@@ -67,10 +67,16 @@ export const RuleCanvas = () => {
             deleteKeyCode={['Backspace', 'Delete']}
             defaultEdgeOptions={{
                 animated: true,
-                style: { stroke: 'rgba(34, 211, 238, 0.4)', strokeWidth: 1.5 },
+                style: { stroke: 'url(#edge-gradient)', strokeWidth: 1.5 },
             }}
         >
-            <Background color="rgba(34, 211, 238, 0.05)" gap={24} size={0.5} />
+            <defs>
+                <linearGradient id="edge-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#22d3ee" />
+                    <stop offset="100%" stopColor="#fde047" />
+                </linearGradient>
+            </defs>
+            <Background color="rgba(34, 211, 238, 0.04)" gap={24} size={0.5} />
             <Controls className="!bg-transparent !border-none !fill-gray-600" />
         </ReactFlow>
     );

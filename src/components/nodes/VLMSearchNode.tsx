@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Handle, Position, NodeProps } from 'reactflow';
+import { BrainCircuit } from 'lucide-react';
 import { VLMSearchNodeData } from '../../types';
 import axios from 'axios';
 import { ReflectiveCard } from '../effects/ReflectiveCard';
@@ -40,9 +41,12 @@ export const VLMSearchNode = ({ data }: NodeProps<VLMSearchNodeData>) => {
         <ReflectiveCard className={`p-4 min-w-[260px] ${isProcessing ? 'neon-flow-border' : ''}`}>
             <Handle type="target" position={Position.Left} className="!bg-cyber-400" />
             <div className="flex flex-col gap-3">
-                <span className="text-xs text-cyber-400 uppercase tracking-widest font-medium">
-                    🧠 VLM Search
-                </span>
+                <div className="flex items-center gap-2">
+                    <BrainCircuit className="w-4 h-4 text-cyber-400" />
+                    <span className="text-xs text-cyber-400 uppercase tracking-widest font-medium">
+                        VLM Search
+                    </span>
+                </div>
                 <div className="flex flex-col gap-1">
                     <label className="text-[10px] text-gray-500 uppercase tracking-wider">Query</label>
                     <textarea

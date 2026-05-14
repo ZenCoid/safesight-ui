@@ -1,7 +1,8 @@
-import { Camera } from '../api/backend';
+import { Camera, Cpu, BrainCircuit, MessageCircle, Mail } from 'lucide-react';
+import { Camera as CameraType } from '../api/backend';
 
 interface Props {
-    cameras: Camera[];
+    cameras: CameraType[];
 }
 
 export const NodePalette = ({ cameras }: Props) => {
@@ -25,8 +26,9 @@ export const NodePalette = ({ cameras }: Props) => {
                             label: cam.name,
                             snapshotUrl: undefined,
                         })}
-                        className="text-sm text-gray-400 hover:text-cyber-400 transition-colors cursor-grab active:cursor-grabbing py-1 border-b border-transparent hover:border-cyber-400/20"
+                        className="flex items-center gap-2 text-sm text-gray-400 hover:text-cyber-400 transition-colors cursor-grab active:cursor-grabbing py-1 border-b border-transparent hover:border-cyber-400/20"
                     >
+                        <Camera className="w-4 h-4" />
                         {cam.name}
                     </div>
                 ))}
@@ -37,15 +39,17 @@ export const NodePalette = ({ cameras }: Props) => {
                 <div
                     draggable
                     onDragStart={(e) => onDragStart(e, 'detector', { modules: ['person', 'helmet'] })}
-                    className="text-sm text-gray-400 hover:text-purple-400 transition-colors cursor-grab py-1"
+                    className="flex items-center gap-2 text-sm text-gray-400 hover:text-purple-400 transition-colors cursor-grab py-1"
                 >
+                    <Cpu className="w-4 h-4" />
                     Person + Helmet
                 </div>
                 <div
                     draggable
                     onDragStart={(e) => onDragStart(e, 'detector', { modules: ['fire'] })}
-                    className="text-sm text-gray-400 hover:text-purple-400 transition-colors cursor-grab py-1"
+                    className="flex items-center gap-2 text-sm text-gray-400 hover:text-purple-400 transition-colors cursor-grab py-1"
                 >
+                    <Cpu className="w-4 h-4" />
                     Fire
                 </div>
                 <div
@@ -55,8 +59,9 @@ export const NodePalette = ({ cameras }: Props) => {
                         channel: 'whatsapp',
                         intervalFrames: 10,
                     })}
-                    className="text-sm text-gray-400 hover:text-cyber-400 transition-colors cursor-grab py-1"
+                    className="flex items-center gap-2 text-sm text-gray-400 hover:text-cyber-400 transition-colors cursor-grab py-1"
                 >
+                    <BrainCircuit className="w-4 h-4" />
                     VLM Search
                 </div>
             </div>
@@ -66,15 +71,17 @@ export const NodePalette = ({ cameras }: Props) => {
                 <div
                     draggable
                     onDragStart={(e) => onDragStart(e, 'action', { channels: ['whatsapp'] })}
-                    className="text-sm text-gray-400 hover:text-amber-400 transition-colors cursor-grab py-1"
+                    className="flex items-center gap-2 text-sm text-gray-400 hover:text-amber-400 transition-colors cursor-grab py-1"
                 >
+                    <MessageCircle className="w-4 h-4" />
                     WhatsApp
                 </div>
                 <div
                     draggable
                     onDragStart={(e) => onDragStart(e, 'action', { channels: ['email'] })}
-                    className="text-sm text-gray-400 hover:text-amber-400 transition-colors cursor-grab py-1"
+                    className="flex items-center gap-2 text-sm text-gray-400 hover:text-amber-400 transition-colors cursor-grab py-1"
                 >
+                    <Mail className="w-4 h-4" />
                     Email
                 </div>
             </div>

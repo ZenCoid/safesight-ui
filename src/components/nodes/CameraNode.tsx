@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Handle, Position, NodeProps } from 'reactflow';
+import { Camera } from 'lucide-react';
 import { CameraNodeData } from '../../types';
 import { useFlowStore } from '../../store/flowStore';
 
@@ -58,7 +59,6 @@ export const CameraNode = ({ data }: NodeProps<CameraNodeData>) => {
                 ctx.fillText('⚠️ ALERT', px + pw + 4, py + 14);
             }
         });
-        // Draw timestamp
         ctx.fillStyle = 'rgba(34, 211, 238, 0.8)';
         ctx.font = '10px monospace';
         ctx.fillText(timestamp, canvas.width - 160, canvas.height - 10);
@@ -73,7 +73,10 @@ export const CameraNode = ({ data }: NodeProps<CameraNodeData>) => {
         <div className="ultra-glass rounded-lg p-3 min-w-[200px]">
             <Handle type="source" position={Position.Right} className="!bg-cyber-400" />
             <div className="flex flex-col items-start gap-2">
-                <span className="text-[10px] text-gray-500 uppercase tracking-widest">Camera</span>
+                <div className="flex items-center gap-2">
+                    <Camera className="w-4 h-4 text-cyber-400" />
+                    <span className="text-[10px] text-gray-500 uppercase tracking-widest">Camera</span>
+                </div>
                 <span className="text-sm font-medium">{data.label}</span>
                 <div className="flex items-center gap-2">
                     <button

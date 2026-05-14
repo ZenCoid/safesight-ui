@@ -9,6 +9,7 @@
     --color-cyber-500: #06b6d4;
     --color-cyber-600: #0891b2;
     --color-cyber-900: #164e63;
+    --color-gold-400: #fde047;
     --color-security-800: #1e293b;
     --color-security-900: #0f172a;
     --color-security-950: #020617;
@@ -28,7 +29,7 @@
     inset: 0;
     z-index: 0;
     background: radial-gradient(ellipse at 20% 50%, rgba(34, 211, 238, 0.06) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 20%, rgba(6, 182, 212, 0.04) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(253, 224, 71, 0.04) 0%, transparent 50%),
         radial-gradient(ellipse at 50% 80%, rgba(34, 211, 238, 0.05) 0%, transparent 50%);
     animation: aurora-shift 20s ease-in-out infinite alternate;
     pointer-events: none;
@@ -85,19 +86,17 @@
     }
 }
 
-/* Flowing neon border – used on active nodes */
+/* Flowing neon border – conic‑gradient, for active nodes */
 .neon-flow-border {
     border: 1px solid transparent;
     background-origin: border-box;
     background-clip: padding-box, border-box;
-    background-image: linear-gradient(#0f172a, #0f172a), conic-gradient(from 0deg, #22d3ee, #0891b2, #06b6d4, #22d3ee);
+    background-image: linear-gradient(#0f172a, #0f172a), conic-gradient(from 0deg, #22d3ee, #06b6d4, #0891b2, #22d3ee);
     animation: rotate-neon 4s linear infinite;
 }
 
 @keyframes rotate-neon {
     100% {
-        background-image: linear-gradient(#0f172a, #0f172a), conic-gradient(from 360deg, #22d3ee, #0891b2, #06b6d4, #22d3ee);
+        background-image: linear-gradient(#0f172a, #0f172a), conic-gradient(from 360deg, #22d3ee, #06b6d4, #0891b2, #22d3ee);
     }
 }
-
-/* Reflective card tilt (applied via motion) – no extra CSS needed */
