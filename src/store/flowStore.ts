@@ -10,8 +10,8 @@ import {
     Connection,
 } from 'reactflow';
 import { CameraNodeData, DetectorNodeData, ActionNodeData, VLMSearchNodeData, ZoneData } from '../types';
+import { validateGraph, getWarningNodeIds } from '../utils/graphValidation';
 
-// Use the combined CustomNodeData type so all node types are accepted
 type AllNodeData = CameraNodeData | DetectorNodeData | ActionNodeData | VLMSearchNodeData;
 
 interface FlowState {
@@ -19,6 +19,7 @@ interface FlowState {
     edges: Edge[];
     zones: ZoneData[];
     selectedCameraForZone: string | null;
+    warningNodeIds: Set<string>;           // nodes with warnings
 
     onNodesChange: OnNodesChange;
     onEdgesChange: OnEdgesChange;
@@ -29,31 +30,53 @@ interface FlowState {
     addZone: (zone: ZoneData) => void;
     removeZone: (cameraId: string, name: string) => void;
     setSelectedCameraForZone: (cameraId: string | null) => void;
+    recalcWarnings: () => void;
 }
 
-export const useFlowStore = create<FlowState>((set) => ({
+export const useFlowStore = create<FlowState>((set, get) => ({
     nodes: [],
     edges: [],
     zones: [],
     selectedCameraForZone: null,
+    warningNodeIds: new Set<string>(),
 
-    onNodesChange: (changes) =>
-        set((state) => ({ nodes: applyNodeChanges(changes, state.nodes) })),
-    onEdgesChange: (changes) =>
-        set((state) => ({ edges: applyEdgeChanges(changes, state.edges) })),
+    // Recalculate warnings whenever graph changes
+    recalcWarnings: () => {
+        const errors = validateGraph();
+        set({ warningNodeIds: getWarningNodeIds(errors) });
+    },
 
-    addNode: (node) => set((state) => ({ nodes: [...state.nodes, node] })),
-    setNodes: (nodes) => set({ nodes }),
-    setEdges: (edges) => set({ edges }),
+    onNodesChange: (changes) => {
+        set((state) => ({ nodes: applyNodeChanges(changes, state.nodes) }));
+        get().recalcWarnings();
+    },
+    onEdgesChange: (changes) => {
+        set((state) => ({ edges: applyEdgeChanges(changes, state.edges) }));
+        get().recalcWarnings();
+    },
 
-    onConnect: (connection) =>
-        set((state) => ({ edges: addEdge(connection, state.edges) })),
+    addNode: (node) => {
+        set((state) => ({ nodes: [...state.nodes, node] }));
+        get().recalcWarnings();
+    },
+    setNodes: (nodes) => {
+        set({ nodes });
+        get().recalcWarnings();
+    },
+    setEdges: (edges) => {
+        set({ edges });
+        get().recalcWarnings();
+    },
 
-    addZone: (zone) =>
-        set((state) => ({ zones: [...state.zones, zone] })),
+    onConnect: (connection) => {
+        set((state) => ({ edges: addEdge(connection, state.edges) }));
+        get().recalcWarnings();
+    },
+
+    addZone: (zone) => set((state) => ({ zones: [...state.zones, zone] })),
     removeZone: (cameraId, name) =>
         set((state) => ({
-            zones: state.zones.filter(z => !(z.cameraId === cameraId && z.name === name))
+            zones: state.zones.filter(z => !(z.cameraId === cameraId && z.name === name)),
         })),
     setSelectedCameraForZone: (cameraId) => set({ selectedCameraForZone: cameraId }),
 }));

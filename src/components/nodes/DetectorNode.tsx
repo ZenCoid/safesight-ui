@@ -1,12 +1,20 @@
 import { Handle, Position, NodeProps } from 'reactflow';
-import { Cpu } from 'lucide-react';
+import { Cpu, AlertTriangle } from 'lucide-react';
 import { DetectorNodeData } from '../../types';
+import { useFlowStore } from '../../store/flowStore';
 import { MetallicSilverCard } from '../effects/MetallicSilverCard';
 
-export const DetectorNode = ({ data }: NodeProps<DetectorNodeData>) => {
+export const DetectorNode = ({ id, data }: NodeProps<DetectorNodeData>) => {
     const isProcessing = (data as any).isProcessing ?? false;
+    const warningNodeIds = useFlowStore(s => s.warningNodeIds);
+    const hasWarning = warningNodeIds.has(id);
     return (
-        <MetallicSilverCard className="p-0" style={{ minWidth: 150 }}>
+        <MetallicSilverCard className={`p-0 ${hasWarning ? 'ring-1 ring-red-500/50' : ''}`} style={{ minWidth: 150 }}>
+            {hasWarning && (
+                <div className="absolute top-1.5 right-1.5 z-30 text-red-400" title="Detector needs a camera feed or output">
+                    <AlertTriangle className="w-3.5 h-3.5" />
+                </div>
+            )}
             <Handle
                 type="target"
                 position={Position.Left}

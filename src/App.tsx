@@ -10,9 +10,12 @@ import { ZoneEditor } from './components/ZoneEditor';
 import { ForensicVault } from './components/ForensicVault';
 import { DotGrid } from './components/effects/DotGrid';
 import { MagneticButton } from './components/effects/MagneticButton';
+import { ToastContainer } from './components/effects/ToastContainer';
 import { getCameras, Camera, createRule, createPinned } from './api/backend';
 import { useFlowStore } from './store/flowStore';
 import { generateRule } from './utils/ruleGenerator';
+import { validateGraph } from './utils/graphValidation';
+import { useToastStore } from './utils/toast';
 import { VLMSearchNodeData } from './types';
 
 function App() {
@@ -24,10 +27,19 @@ function App() {
 
     const selectedCameraForZone = useFlowStore(s => s.selectedCameraForZone);
     const setSelectedCameraForZone = useFlowStore(s => s.setSelectedCameraForZone);
+    const addToast = useToastStore(s => s.addToast);
 
     useEffect(() => { getCameras().then(res => setCameras(res.data)).catch(console.error); }, []);
 
     const handleDeploy = async () => {
+        // 1. Validate graph
+        const errors = validateGraph();
+        if (errors.length > 0) {
+            // Show the first error as toast
+            addToast(errors[0].message, 'error');
+            return;
+        }
+
         const { nodes, edges } = useFlowStore.getState();
         const vlmNode = nodes.find(n => n.type === 'vlmSearch');
         if (vlmNode) {
@@ -46,14 +58,22 @@ function App() {
                     rule_id: undefined,
                 });
                 setDeployStatus('✅ Pinned search activated!');
-            } catch (err) { setDeployStatus('❌ Error'); }
+                addToast('Pinned search deployed', 'success');
+            } catch (err: any) {
+                const msg = err?.response?.data?.detail || err?.message || 'Deployment failed';
+                addToast(msg, 'error');
+            }
             return;
         }
         try {
             const rule = generateRule(ruleName);
             await createRule(rule);
             setDeployStatus('✅ Rule deployed');
-        } catch (err) { setDeployStatus('❌ Error'); }
+            addToast('Rule deployed successfully', 'success');
+        } catch (err: any) {
+            const msg = err?.response?.data?.detail || err?.message || 'Deployment failed';
+            addToast(msg, 'error');
+        }
     };
 
     return (
@@ -117,6 +137,7 @@ function App() {
                 </div>
             )}
             {showPreview && <RulePreview ruleName={ruleName} onClose={() => setShowPreview(false)} />}
+            <ToastContainer />
         </div>
     );
 }

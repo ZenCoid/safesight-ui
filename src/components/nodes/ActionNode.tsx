@@ -1,6 +1,7 @@
 import { Handle, Position, NodeProps } from 'reactflow';
-import { MessageCircle, Mail, Bell } from 'lucide-react';
+import { MessageCircle, Mail, Bell, AlertTriangle } from 'lucide-react';
 import { ActionNodeData } from '../../types';
+import { useFlowStore } from '../../store/flowStore';
 import { MetallicSilverCard } from '../effects/MetallicSilverCard';
 
 const icons: Record<string, React.ReactNode> = {
@@ -8,9 +9,16 @@ const icons: Record<string, React.ReactNode> = {
     email: <Mail className="w-4 h-4" />,
 };
 
-export const ActionNode = ({ data }: NodeProps<ActionNodeData>) => {
+export const ActionNode = ({ id, data }: NodeProps<ActionNodeData>) => {
+    const warningNodeIds = useFlowStore(s => s.warningNodeIds);
+    const hasWarning = warningNodeIds.has(id);
     return (
-        <MetallicSilverCard className="p-0" style={{ minWidth: 150 }}>
+        <MetallicSilverCard className={`p-0 ${hasWarning ? 'ring-1 ring-red-500/50' : ''}`} style={{ minWidth: 150 }}>
+            {hasWarning && (
+                <div className="absolute top-1.5 right-1.5 z-30 text-red-400" title="Action needs a detector input">
+                    <AlertTriangle className="w-3.5 h-3.5" />
+                </div>
+            )}
             <Handle
                 type="target"
                 position={Position.Left}
