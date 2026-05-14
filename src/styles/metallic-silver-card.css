@@ -1,0 +1,138 @@
+/* ==========================================================================
+   Metallic Silver Border Card
+   Adapted from the silver electric border template
+   ========================================================================== */
+
+.metallic-card-wrapper {
+    position: relative;
+    display: inline-block;
+    padding: 2px;
+    border-radius: 24px;
+    background: linear-gradient(-30deg,
+            var(--msc-gradient),
+            transparent,
+            var(--msc-gradient)),
+        linear-gradient(to bottom,
+            var(--msc-bg-dark),
+            var(--msc-bg-dark));
+    --msc-bg-dark: oklch(0.185 0 0);
+    --msc-border-color: #c0c0c0;
+    --msc-gradient: oklch(from var(--msc-border-color) 0.3 calc(c / 2) h / 0.4);
+    --msc-light: oklch(from var(--msc-border-color) l c h);
+    --msc-bright: #e8e8e8;
+    --msc-medium: #a8a8a8;
+    --msc-dark: #808080;
+}
+
+.metallic-card-inner {
+    position: relative;
+}
+
+.metallic-card-border-outer {
+    border: 2px solid rgba(192, 192, 192, 0.5);
+    border-radius: 24px;
+    padding-right: 4px;
+    padding-bottom: 4px;
+}
+
+.metallic-card-main {
+    border-radius: 24px;
+    border: 2px solid var(--msc-border-color);
+    margin-top: -4px;
+    margin-left: -4px;
+    filter: url(#turbulent-displace);
+    position: relative;
+    background: var(--msc-bg-dark);
+    min-width: 140px;
+    min-height: 60px;
+    overflow: hidden;
+}
+
+/* Glow layers */
+.metallic-card-glow-1 {
+    border: 2px solid rgba(192, 192, 192, 0.6);
+    border-radius: 24px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    filter: blur(1px);
+    pointer-events: none;
+}
+
+.metallic-card-glow-2 {
+    border: 2px solid var(--msc-light);
+    border-radius: 24px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    filter: blur(4px);
+    pointer-events: none;
+}
+
+/* Overlay effects */
+.metallic-card-overlay-1,
+.metallic-card-overlay-2 {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 24px;
+    mix-blend-mode: overlay;
+    transform: scale(1.1);
+    filter: blur(16px);
+    pointer-events: none;
+}
+
+.metallic-card-overlay-1 {
+    opacity: 1;
+    background: linear-gradient(-30deg, white, transparent 30%, transparent 70%, white);
+}
+
+.metallic-card-overlay-2 {
+    opacity: 0.5;
+    background: linear-gradient(-30deg, white, transparent 30%, transparent 70%, white);
+}
+
+/* Background glow */
+.metallic-card-bg-glow {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 24px;
+    filter: blur(32px);
+    transform: scale(1.1);
+    opacity: 0.3;
+    z-index: -1;
+    pointer-events: none;
+    background: linear-gradient(-30deg, var(--msc-bright), transparent, var(--msc-border-color));
+}
+
+/* Content layer sits above everything */
+.metallic-card-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    z-index: 5;
+}
+
+/* Ensure React Flow handles are above */
+.metallic-card-wrapper .react-flow__handle {
+    z-index: 20 !important;
+}

@@ -3,7 +3,7 @@ import { Handle, Position, NodeProps } from 'reactflow';
 import { BrainCircuit } from 'lucide-react';
 import { VLMSearchNodeData } from '../../types';
 import axios from 'axios';
-import { ReflectiveCard } from '../effects/ReflectiveCard';
+import { MetallicSilverCard } from '../effects/MetallicSilverCard';
 import { ProcessingDots } from '../effects/ProcessingDots';
 
 export const VLMSearchNode = ({ data }: NodeProps<VLMSearchNodeData>) => {
@@ -39,15 +39,15 @@ export const VLMSearchNode = ({ data }: NodeProps<VLMSearchNodeData>) => {
     };
 
     return (
-        <ReflectiveCard className={`p-4 min-w-[270px] ${isProcessing ? 'glow-rose' : ''}`}>
+        <MetallicSilverCard className="p-0" style={{ minWidth: 270 }}>
             <Handle
                 type="target"
                 position={Position.Left}
                 className="!bg-slate-400 !w-4 !h-4 !border-2 !border-[#111118] !z-50 hover:!bg-teal-400 transition-colors"
             />
-            <div className="flex flex-col gap-3 relative z-10">
+            <div className="flex flex-col gap-3 p-4">
                 <div className="flex items-center gap-2">
-                    <BrainCircuit className="w-4 h-4 text-slate-400" />
+                    <BrainCircuit className="w-4 h-4 text-gold-400" />
                     <span className="text-xs text-slate-400 tracking-widest uppercase">VLM Search</span>
                     <ProcessingDots active={isProcessing} />
                 </div>
@@ -57,7 +57,7 @@ export const VLMSearchNode = ({ data }: NodeProps<VLMSearchNodeData>) => {
                         value={query}
                         onChange={e => setQuery(e.target.value)}
                         placeholder="Alert if person in red shirt"
-                        className="bg-transparent border-b border-slate-800 focus:border-slate-400 outline-none px-0 py-1 text-sm text-slate-200 resize-none h-14 placeholder:text-slate-700"
+                        className="bg-transparent border-b border-slate-800 focus:border-gold-400/60 outline-none px-0 py-1 text-sm text-slate-200 resize-none h-14 placeholder:text-slate-700"
                     />
                 </div>
                 <div className="flex flex-col gap-1">
@@ -85,6 +85,6 @@ export const VLMSearchNode = ({ data }: NodeProps<VLMSearchNodeData>) => {
                     )}
                 </div>
             </div>
-        </ReflectiveCard>
+        </MetallicSilverCard>
     );
 };

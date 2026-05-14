@@ -3,7 +3,7 @@ import { Handle, Position, NodeProps } from 'reactflow';
 import { Camera } from 'lucide-react';
 import { CameraNodeData } from '../../types';
 import { useFlowStore } from '../../store/flowStore';
-import { ReflectiveCard } from '../effects/ReflectiveCard';
+import { MetallicSilverCard } from '../effects/MetallicSilverCard';
 
 export const CameraNode = ({ data }: NodeProps<CameraNodeData>) => {
     const setSelected = useFlowStore(s => s.setSelectedCameraForZone);
@@ -70,7 +70,7 @@ export const CameraNode = ({ data }: NodeProps<CameraNodeData>) => {
     }, [drawOverlay]);
 
     return (
-        <ReflectiveCard className={`p-3 min-w-[210px] ${isProcessing ? 'glow-rose' : ''}`}>
+        <MetallicSilverCard className="p-0" style={{ minWidth: 210 }}>
             <Handle
                 type="source"
                 position={Position.Right}
@@ -81,7 +81,7 @@ export const CameraNode = ({ data }: NodeProps<CameraNodeData>) => {
                 position={Position.Left}
                 className="!bg-slate-400 !w-4 !h-4 !border-2 !border-[#111118] !z-50 hover:!bg-teal-400 transition-colors"
             />
-            <div className="flex flex-col gap-2 relative z-10">
+            <div className="flex flex-col gap-2 p-4 h-full">
                 <div className="flex items-center gap-2">
                     <Camera className="w-4 h-4 text-slate-400" />
                     <span className="text-[10px] text-slate-500 tracking-widest uppercase">Camera</span>
@@ -108,6 +108,6 @@ export const CameraNode = ({ data }: NodeProps<CameraNodeData>) => {
                     Edit Zones
                 </button>
             </div>
-        </ReflectiveCard>
+        </MetallicSilverCard>
     );
 };
