@@ -4,6 +4,7 @@ import { BrainCircuit } from 'lucide-react';
 import { VLMSearchNodeData } from '../../types';
 import axios from 'axios';
 import { ReflectiveCard } from '../effects/ReflectiveCard';
+import { DecryptText } from '../effects/DecryptText';
 
 export const VLMSearchNode = ({ data }: NodeProps<VLMSearchNodeData>) => {
     const [query, setQuery] = useState(data.query || '');
@@ -30,7 +31,7 @@ export const VLMSearchNode = ({ data }: NodeProps<VLMSearchNodeData>) => {
             const res = await axios.post('http://127.0.0.1:8000/minio/upload', formData);
             setImageKey(res.data.object_name);
         } catch (err) {
-            console.error('Upload failed', err);
+            console.error(err);
             alert('Upload failed');
         } finally {
             setUploading(false);
@@ -38,57 +39,42 @@ export const VLMSearchNode = ({ data }: NodeProps<VLMSearchNodeData>) => {
     };
 
     return (
-        <ReflectiveCard className={`p-4 min-w-[260px] ${isProcessing ? 'neon-flow-border' : ''}`}>
-            <Handle type="target" position={Position.Left} className="!bg-cyber-400" />
+        <ReflectiveCard className={`p-4 min-w-[270px] ${isProcessing ? 'glow-rose' : ''}`}>
+            <Handle type="target" position={Position.Left} className="!bg-slate-400" />
             <div className="flex flex-col gap-3">
                 <div className="flex items-center gap-2">
-                    <BrainCircuit className="w-4 h-4 text-cyber-400" />
-                    <span className="text-xs text-cyber-400 uppercase tracking-widest font-medium">
-                        VLM Search
-                    </span>
+                    <BrainCircuit className="w-4 h-4 text-slate-400" />
+                    <span className="text-xs text-slate-400 tracking-widest uppercase">VLM Search</span>
                 </div>
                 <div className="flex flex-col gap-1">
-                    <label className="text-[10px] text-gray-500 uppercase tracking-wider">Query</label>
+                    <label className="text-[10px] text-slate-500 tracking-wider">QUERY</label>
                     <textarea
                         value={query}
-                        onChange={(e) => setQuery(e.target.value)}
-                        placeholder="Alert me if a person in a red shirt appears"
-                        className="bg-transparent border-b border-gray-700 focus:border-cyber-400 outline-none px-0 py-1 text-sm text-gray-200 resize-none h-16 placeholder:text-gray-600"
+                        onChange={e => setQuery(e.target.value)}
+                        placeholder="Alert if person in red shirt"
+                        className="bg-transparent border-b border-slate-800 focus:border-slate-400 outline-none px-0 py-1 text-sm text-slate-200 resize-none h-14 placeholder:text-slate-700"
                     />
                 </div>
                 <div className="flex flex-col gap-1">
-                    <label className="text-[10px] text-gray-500 uppercase tracking-wider">Channel</label>
-                    <select
-                        value={channel}
-                        onChange={(e) => setChannel(e.target.value)}
-                        className="bg-transparent border-b border-gray-700 focus:border-cyber-400 outline-none px-0 py-1 text-sm text-gray-200"
-                    >
+                    <label className="text-[10px] text-slate-500 tracking-wider">CHANNEL</label>
+                    <select value={channel} onChange={e => setChannel(e.target.value)}
+                        className="bg-transparent border-b border-slate-800 focus:border-slate-400 outline-none px-0 py-1 text-sm text-slate-200">
                         <option value="whatsapp">WhatsApp</option>
                         <option value="email">Email</option>
                     </select>
                 </div>
                 <div className="flex flex-col gap-1">
-                    <label className="text-[10px] text-gray-500 uppercase tracking-wider">Interval (frames)</label>
-                    <input
-                        type="number"
-                        value={interval}
-                        onChange={(e) => setInterval(Number(e.target.value))}
-                        min={1}
-                        className="bg-transparent border-b border-gray-700 focus:border-cyber-400 outline-none px-0 py-1 text-sm text-gray-200 w-20"
-                    />
+                    <label className="text-[10px] text-slate-500 tracking-wider">INTERVAL</label>
+                    <input type="number" value={interval} onChange={e => setInterval(Number(e.target.value))} min={1}
+                        className="bg-transparent border-b border-slate-800 focus:border-slate-400 outline-none px-0 py-1 text-sm text-slate-200 w-16" />
                 </div>
                 <div className="flex flex-col gap-1">
-                    <label className="text-[10px] text-gray-500 uppercase tracking-wider">Test Image</label>
-                    <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleUpload}
-                        disabled={uploading}
-                        className="text-xs text-gray-500 file:mr-2 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-xs file:font-medium file:bg-cyber-400/10 file:text-cyber-400 hover:file:bg-cyber-400/20"
-                    />
-                    {uploading && <span className="text-xs text-cyber-400">Uploading…</span>}
+                    <label className="text-[10px] text-slate-500 tracking-wider">TEST IMAGE</label>
+                    <input type="file" accept="image/*" onChange={handleUpload} disabled={uploading}
+                        className="text-xs text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-xs file:font-medium file:bg-slate-800 file:text-slate-300 hover:file:bg-slate-700" />
+                    {uploading && <span className="text-xs text-slate-400">Uploading…</span>}
                     {imageKey && (
-                        <div className="text-[10px] text-gray-500 truncate font-mono">
+                        <div className="text-[10px] text-slate-600 font-mono truncate">
                             ✅ {imageKey}
                         </div>
                     )}

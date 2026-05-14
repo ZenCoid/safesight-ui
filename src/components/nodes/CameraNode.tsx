@@ -3,6 +3,7 @@ import { Handle, Position, NodeProps } from 'reactflow';
 import { Camera } from 'lucide-react';
 import { CameraNodeData } from '../../types';
 import { useFlowStore } from '../../store/flowStore';
+import { ReflectiveCard } from '../effects/ReflectiveCard';
 
 export const CameraNode = ({ data }: NodeProps<CameraNodeData>) => {
     const setSelected = useFlowStore(s => s.setSelectedCameraForZone);
@@ -12,6 +13,7 @@ export const CameraNode = ({ data }: NodeProps<CameraNodeData>) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const wsRef = useRef<WebSocket | null>(null);
     const [timestamp, setTimestamp] = useState('');
+    const isProcessing = (data as any).isProcessing ?? false;
 
     const streamUrl = `http://127.0.0.1:8000/cameras/${data.cameraId}/stream`;
 
@@ -21,9 +23,9 @@ export const CameraNode = ({ data }: NodeProps<CameraNodeData>) => {
         wsRef.current = ws;
         ws.onopen = () => ws.send(JSON.stringify({ action: 'subscribe', camera_id: data.cameraId }));
         ws.onmessage = (event) => {
-            const detectionEvent = JSON.parse(event.data);
-            if (detectionEvent.camera_id === data.cameraId) {
-                setDetections(detectionEvent.objects || []);
+            const d = JSON.parse(event.data);
+            if (d.camera_id === data.cameraId) {
+                setDetections(d.objects || []);
                 setTimestamp(new Date().toLocaleTimeString('en-US', { hour12: false }));
             }
         };
@@ -40,28 +42,26 @@ export const CameraNode = ({ data }: NodeProps<CameraNodeData>) => {
         canvas.width = img.clientWidth;
         canvas.height = img.clientHeight;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        detections.forEach((obj) => {
+        detections.forEach(obj => {
             const [x, y, w, h] = obj.bbox;
-            const px = x * canvas.width;
-            const py = y * canvas.height;
-            const pw = w * canvas.width;
-            const ph = h * canvas.height;
-            const isViolation = obj.class_name === 'no-helmet' || obj.class_name === 'fire';
-            ctx.strokeStyle = isViolation ? '#ef4444' : '#22d3ee';
-            ctx.lineWidth = 1.5;
+            const px = x * canvas.width, py = y * canvas.height;
+            const pw = w * canvas.width, ph = h * canvas.height;
+            const violation = obj.class_name === 'no-helmet' || obj.class_name === 'fire';
+            ctx.strokeStyle = violation ? '#fb7185' : '#e2e8f0';
+            ctx.lineWidth = 1.2;
             ctx.strokeRect(px, py, pw, ph);
-            ctx.fillStyle = isViolation ? '#ef4444' : '#22d3ee';
-            ctx.font = '10px monospace';
+            ctx.fillStyle = violation ? '#fb7185' : '#e2e8f0';
+            ctx.font = '9px Inter';
             ctx.fillText(`${obj.class_name} (${(obj.confidence * 100).toFixed(0)}%)`, px, py - 4);
-            if (isViolation) {
-                ctx.fillStyle = '#ef4444';
-                ctx.font = 'bold 12px monospace';
-                ctx.fillText('⚠️ ALERT', px + pw + 4, py + 14);
+            if (violation) {
+                ctx.fillStyle = '#fb7185';
+                ctx.font = 'bold 10px Inter';
+                ctx.fillText('⚠ BREACH', px + pw + 4, py + 14);
             }
         });
-        ctx.fillStyle = 'rgba(34, 211, 238, 0.8)';
-        ctx.font = '10px monospace';
-        ctx.fillText(timestamp, canvas.width - 160, canvas.height - 10);
+        ctx.fillStyle = 'rgba(226,232,240,0.8)';
+        ctx.font = '9px monospace';
+        ctx.fillText(timestamp, canvas.width - 140, canvas.height - 8);
     }, [detections, timestamp]);
 
     useEffect(() => {
@@ -70,48 +70,36 @@ export const CameraNode = ({ data }: NodeProps<CameraNodeData>) => {
     }, [drawOverlay]);
 
     return (
-        <div className="ultra-glass rounded-lg p-3 min-w-[200px]">
-            <Handle type="source" position={Position.Right} className="!bg-cyber-400" />
-            <div className="flex flex-col items-start gap-2">
+        <ReflectiveCard className={`p-3 min-w-[210px] ${isProcessing ? 'glow-rose' : ''}`}>
+            <Handle type="source" position={Position.Right} className="!bg-slate-400" />
+            <div className="flex flex-col gap-2">
                 <div className="flex items-center gap-2">
-                    <Camera className="w-4 h-4 text-cyber-400" />
-                    <span className="text-[10px] text-gray-500 uppercase tracking-widest">Camera</span>
+                    <Camera className="w-4 h-4 text-slate-400" />
+                    <span className="text-[10px] text-slate-500 tracking-widest uppercase">Camera</span>
                 </div>
-                <span className="text-sm font-medium">{data.label}</span>
+                <span className="text-sm font-medium text-slate-200">{data.label}</span>
                 <div className="flex items-center gap-2">
-                    <button
-                        onClick={() => setShowPreview(!showPreview)}
-                        className="text-xs text-cyber-400 hover:text-cyber-300 transition-colors"
-                    >
+                    <button onClick={() => setShowPreview(!showPreview)} className="text-xs text-slate-400 hover:text-white transition-colors">
                         {showPreview ? 'Hide' : 'Live Preview'}
                     </button>
                     {showPreview && (
                         <span className="flex items-center gap-1.5 text-xs">
                             <span className="live-dot"></span>
-                            <span className="text-red-400 font-semibold tracking-wider">LIVE</span>
+                            <span className="text-rose-400 tracking-widest">LIVE</span>
                         </span>
                     )}
                 </div>
                 {showPreview && (
-                    <div className="relative w-full h-32 rounded overflow-hidden border border-gray-800 scanline">
-                        <img
-                            ref={imgRef}
-                            src={streamUrl}
-                            alt="Live feed"
-                            className="absolute inset-0 w-full h-full object-cover"
-                            onError={(e) => (e.target as HTMLImageElement).style.display = 'none'}
-                        />
+                    <div className="relative w-full h-32 rounded overflow-hidden border border-slate-800 scanline">
+                        <img ref={imgRef} src={streamUrl} alt="Feed" className="absolute inset-0 w-full h-full object-cover" onError={e => (e.target as HTMLImageElement).style.display = 'none'} />
                         <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
                     </div>
                 )}
-                <button
-                    onClick={() => setSelected(data.cameraId)}
-                    className="mt-1 text-xs text-gray-500 hover:text-cyber-400 transition-colors"
-                >
+                <button onClick={() => setSelected(data.cameraId)} className="text-xs text-slate-500 hover:text-slate-300 transition-colors">
                     Edit Zones
                 </button>
             </div>
             <Handle type="target" position={Position.Left} />
-        </div>
+        </ReflectiveCard>
     );
 };
