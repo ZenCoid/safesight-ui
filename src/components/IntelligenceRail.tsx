@@ -43,7 +43,6 @@ export const IntelligenceRail = ({ active, onSelect }: Props) => {
                     </span>
                 </button>
             ))}
-            {/* System Pulse scrolling ticker */}
             <div className="mt-auto w-full overflow-hidden">
                 {telemetry ? (
                     <div className="whitespace-nowrap animate-marquee text-[8px] text-[#e2e8f0]/50 leading-tight">

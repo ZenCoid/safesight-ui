@@ -55,7 +55,6 @@ export const CameraNode = ({ id, data }: NodeProps<CameraNodeData>) => {
                             });
                         }
                     });
-                    // Remove objects not seen in this frame (simple decay)
                     return newDetections.filter(n => rawObjects.some(o => `${o.class_name}_${o.bbox.join(',')}` === n.id));
                 });
             }
@@ -80,7 +79,6 @@ export const CameraNode = ({ id, data }: NodeProps<CameraNodeData>) => {
             const violation = obj.class_name === 'no-helmet' || obj.class_name === 'fire';
             const confirmed = obj.confirmCount >= 3;
 
-            // Bounding box
             ctx.strokeStyle = violation ? '#fb7185' : '#e2e8f0';
             ctx.lineWidth = 1.2;
             ctx.strokeRect(px, py, pw, ph);
@@ -88,7 +86,6 @@ export const CameraNode = ({ id, data }: NodeProps<CameraNodeData>) => {
             ctx.font = '9px Inter';
             ctx.fillText(`${obj.class_name} (${(obj.confidence * 100).toFixed(0)}%)`, px, py - 4);
 
-            // Confirmation progress bar
             const barWidth = pw;
             const barHeight = 4;
             const barX = px;

@@ -16,6 +16,8 @@ interface ForensicResult {
     image_hash: string;
 }
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
+
 export const ForensicVault = () => {
     const [query, setQuery] = useState('');
     const [results, setResults] = useState<ForensicResult[]>([]);
@@ -26,7 +28,7 @@ export const ForensicVault = () => {
         if (!query.trim()) return;
         setLoading(true);
         try {
-            const res = await axios.post('http://127.0.0.1:8000/v1/forensic/search', {
+            const res = await axios.post(`${API_BASE}/v1/forensic/search`, {
                 query, max_frames: 20, show_all: showAll,
             });
             setResults(res.data.results);
