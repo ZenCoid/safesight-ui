@@ -8,9 +8,9 @@ import { MetallicSilverCard } from '../effects/MetallicSilverCard';
 interface DetectionWithConfirm {
     class_name: string;
     confidence: number;
-    bbox: number[];
-    confirmCount: number;   // 0..3
-    id: string;             // unique identifier: `${class_name}_${bbox.join(',')}`
+    bbox: number[];        // [xmin, ymin, xmax, ymax] normalised
+    confirmCount: number;  // 0..3
+    id: string;            // unique identifier: `${class_name}_${bbox.join(',')}`
 }
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
@@ -49,7 +49,7 @@ export const CameraNode = ({ id, data }: NodeProps<CameraNodeData>) => {
                             newDetections.push({
                                 class_name: obj.class_name,
                                 confidence: obj.confidence,
-                                bbox: obj.bbox,
+                                bbox: obj.bbox,   // keep as [xmin, ymin, xmax, ymax]
                                 confirmCount: 1,
                                 id: objId,
                             });
@@ -73,12 +73,16 @@ export const CameraNode = ({ id, data }: NodeProps<CameraNodeData>) => {
         canvas.height = img.clientHeight;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         detections.forEach(obj => {
-            const [x, y, w, h] = obj.bbox;
-            const px = x * canvas.width, py = y * canvas.height;
-            const pw = w * canvas.width, ph = h * canvas.height;
+            const [xmin, ymin, xmax, ymax] = obj.bbox;
+            // Convert to pixel coordinates
+            const px = xmin * canvas.width;
+            const py = ymin * canvas.height;
+            const pw = (xmax - xmin) * canvas.width;
+            const ph = (ymax - ymin) * canvas.height;
             const violation = obj.class_name === 'no-helmet' || obj.class_name === 'fire';
             const confirmed = obj.confirmCount >= 3;
 
+            // Bounding box
             ctx.strokeStyle = violation ? '#fb7185' : '#e2e8f0';
             ctx.lineWidth = 1.2;
             ctx.strokeRect(px, py, pw, ph);
@@ -86,15 +90,14 @@ export const CameraNode = ({ id, data }: NodeProps<CameraNodeData>) => {
             ctx.font = '9px Inter';
             ctx.fillText(`${obj.class_name} (${(obj.confidence * 100).toFixed(0)}%)`, px, py - 4);
 
-            const barWidth = pw;
+            // Confirmation progress bar
             const barHeight = 4;
-            const barX = px;
             const barY = py + ph + 2;
             const fillPercent = obj.confirmCount / 3;
             ctx.fillStyle = 'rgba(0,0,0,0.6)';
-            ctx.fillRect(barX, barY, barWidth, barHeight);
+            ctx.fillRect(px, barY, pw, barHeight);
             ctx.fillStyle = confirmed ? '#4ade80' : '#facc15';
-            ctx.fillRect(barX, barY, barWidth * fillPercent, barHeight);
+            ctx.fillRect(px, barY, pw * fillPercent, barHeight);
 
             if (violation && confirmed) {
                 ctx.fillStyle = '#fb7185';
