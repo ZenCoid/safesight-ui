@@ -106,12 +106,12 @@ export const ForensicVault = () => {
                                     exit={{ opacity: 0, scale: 0.95 }}
                                     transition={{ duration: 0.4 }}
                                     layout
-                                    className={`${isHighConfidence ? 'col-span-2' : ''}`}
+                                    className={`${isHighConfidence ? 'col-span-2 row-span-2' : ''}`}
                                 >
                                     <ReflectiveCard className="flex flex-col h-full">
                                         <img
                                             src={item.thumbnail_url}
-                                            className={`w-full object-cover ${isHighConfidence ? 'h-64' : 'h-48'}`}
+                                            className={`w-full object-cover ${isHighConfidence ? 'h-72' : 'h-48'}`}
                                         />
                                         <div className="p-5 flex flex-col flex-1">
                                             <p className="text-xs text-[#e2e8f0]/40 mb-3 font-mono tracking-wider">
@@ -138,7 +138,7 @@ export const ForensicVault = () => {
                                             </div>
                                             {item.image_hash && (
                                                 <div className="border-t border-[#e2e8f0]/10 pt-3 group">
-                                                    <p className="text-[10px] font-mono text-[#e2e8f0]/30 group-hover:text-[#e2e8f0] transition-opacity duration-300">
+                                                    <p className="text-[10px] font-mono text-[#e2e8f0]/30 group-hover:text-[#e2e8f0] group-hover:drop-shadow-[0_0_6px_rgba(226,232,240,0.3)] transition-all duration-300">
                                                         SHA‑256: {item.image_hash}
                                                     </p>
                                                 </div>

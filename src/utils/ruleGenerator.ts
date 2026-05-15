@@ -15,7 +15,7 @@ function buildConditionFromGraph(
     const actionNodes = nodes.filter(n => n.type === 'action');
 
     // For each action, trace back to its detectors (via edges)
-    const detectorGroups: string[][] = [];   // each group = detectors feeding same action
+    const detectorGroups: string[] = [];   // each group = detectors feeding same action
 
     for (const action of actionNodes) {
         const incomingEdges = edges.filter(e => e.target === action.id);

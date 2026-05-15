@@ -1,7 +1,5 @@
 import { Camera, FolderSearch } from 'lucide-react';
-import { useEffect, useState, useRef } from 'react';
-
-const WS_BASE = import.meta.env.VITE_WS_URL || 'ws://127.0.0.1:8000';
+import { useEffect, useState } from 'react';
 
 interface Props {
     active: string;
@@ -15,35 +13,15 @@ const items = [
 
 export const IntelligenceRail = ({ active, onSelect }: Props) => {
     const [telemetry, setTelemetry] = useState<any>(null);
-    const wsRef = useRef<WebSocket | null>(null);
-    const reconnectTimer = useRef<any>(null);
 
-    const connect = () => {
-        const ws = new WebSocket(`${WS_BASE}/ws/telemetry`);
-        wsRef.current = ws;
-
+    useEffect(() => {
+        const ws = new WebSocket('ws://127.0.0.1:8000/ws/telemetry');
         ws.onmessage = (event) => {
             try {
                 setTelemetry(JSON.parse(event.data));
             } catch { }
         };
-
-        ws.onclose = () => {
-            setTelemetry(null);
-            reconnectTimer.current = setTimeout(connect, 5000);
-        };
-
-        ws.onerror = () => {
-            ws.close();
-        };
-    };
-
-    useEffect(() => {
-        connect();
-        return () => {
-            if (reconnectTimer.current) clearTimeout(reconnectTimer.current);
-            wsRef.current?.close();
-        };
+        return () => ws.close();
     }, []);
 
     return (
@@ -52,7 +30,8 @@ export const IntelligenceRail = ({ active, onSelect }: Props) => {
                 <button
                     key={id}
                     onClick={() => onSelect(id)}
-                    className={`p-2 rounded-lg transition-all group relative ${active === id ? 'bg-white/5 border border-[#e2e8f0]/10' : 'hover:bg-white/[0.02]'}`}
+                    className={`p-2 rounded-lg transition-all group relative ${active === id ? 'bg-white/5 border border-[#e2e8f0]/10' : 'hover:bg-white/[0.02]'
+                        }`}
                     title={label}
                 >
                     <Icon className={`w-5 h-5 ${active === id ? 'text-[#e2e8f0]' : 'text-[#e2e8f0]/30'}`} />
@@ -61,15 +40,14 @@ export const IntelligenceRail = ({ active, onSelect }: Props) => {
                     </span>
                 </button>
             ))}
-            <div className="mt-auto w-full px-1">
+            {/* System Pulse scrolling ticker */}
+            <div className="mt-auto w-full overflow-hidden">
                 {telemetry ? (
-                    <div className="text-[8px] text-[#e2e8f0]/30 leading-tight animate-pulse">
-                        <div>CPU {telemetry.cpu_percent}%</div>
-                        <div>MEM {telemetry.memory_used_gb}GB</div>
-                        <div>VLM {telemetry.vlm_loaded ? 'ON' : 'OFF'}</div>
+                    <div className="whitespace-nowrap animate-marquee text-[8px] text-[#e2e8f0]/50 leading-tight">
+                        CPU {telemetry.cpu_percent}% · MEM {telemetry.memory_used_gb}GB · VLM {telemetry.vlm_loaded ? 'ON' : 'OFF'} · HASH {telemetry.hash_gen_per_sec}/s · PL {telemetry.pseudo_labeling_active ? 'ACTIVE' : 'IDLE'}
                     </div>
                 ) : (
-                    <div className="text-[8px] text-[#e2e8f0]/20">CONNECTING…</div>
+                    <div className="text-[8px] text-[#e2e8f0]/20 animate-pulse">CONNECTING…</div>
                 )}
             </div>
         </aside>

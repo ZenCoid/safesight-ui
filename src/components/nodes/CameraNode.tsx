@@ -5,61 +5,61 @@ import { CameraNodeData } from '../../types';
 import { useFlowStore } from '../../store/flowStore';
 import { MetallicSilverCard } from '../effects/MetallicSilverCard';
 
-const WS_BASE = import.meta.env.VITE_WS_URL || 'ws://127.0.0.1:8000';
+interface DetectionWithConfirm {
+    class_name: string;
+    confidence: number;
+    bbox: number[];
+    confirmCount: number;   // 0..3
+    id: string;             // unique identifier: `${class_name}_${bbox.join(',')}`
+}
 
 export const CameraNode = ({ id, data }: NodeProps<CameraNodeData>) => {
     const setSelected = useFlowStore(s => s.setSelectedCameraForZone);
     const [showPreview, setShowPreview] = useState(false);
-    const [detections, setDetections] = useState<any[]>([]);
+    const [detections, setDetections] = useState<DetectionWithConfirm[]>([]);
     const imgRef = useRef<HTMLImageElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const wsRef = useRef<WebSocket | null>(null);
-    const reconnectTimer = useRef<any>(null);
     const [timestamp, setTimestamp] = useState('');
     const isProcessing = (data as any).isProcessing ?? false;
 
-    const streamUrl = `${import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'}/cameras/${data.cameraId}/stream`;
-
-    const connectWebSocket = useCallback(() => {
-        if (!showPreview) return;
-        const ws = new WebSocket(`${WS_BASE}/ws/overlay`);
-        wsRef.current = ws;
-
-        ws.onopen = () => {
-            ws.send(JSON.stringify({ action: 'subscribe', camera_id: data.cameraId }));
-        };
-
-        ws.onmessage = (event) => {
-            try {
-                const d = JSON.parse(event.data);
-                if (d.camera_id === data.cameraId) {
-                    setDetections(d.objects || []);
-                    setTimestamp(new Date().toLocaleTimeString('en-US', { hour12: false }));
-                }
-            } catch { }
-        };
-
-        ws.onclose = () => {
-            setDetections([]);
-            if (showPreview) {
-                reconnectTimer.current = setTimeout(connectWebSocket, 3000);
-            }
-        };
-
-        ws.onerror = () => {
-            ws.close();
-        };
-    }, [showPreview, data.cameraId]);
+    const streamUrl = `http://127.0.0.1:8000/cameras/${data.cameraId}/stream`;
 
     useEffect(() => {
-        if (showPreview) {
-            connectWebSocket();
-        }
-        return () => {
-            if (reconnectTimer.current) clearTimeout(reconnectTimer.current);
-            wsRef.current?.close();
+        if (!showPreview) return;
+        const ws = new WebSocket('ws://127.0.0.1:8000/ws/overlay');
+        wsRef.current = ws;
+        ws.onopen = () => ws.send(JSON.stringify({ action: 'subscribe', camera_id: data.cameraId }));
+        ws.onmessage = (event) => {
+            const d = JSON.parse(event.data);
+            if (d.camera_id === data.cameraId) {
+                setTimestamp(new Date().toLocaleTimeString('en-US', { hour12: false }));
+                const rawObjects: any[] = d.objects || [];
+                setDetections(prev => {
+                    const newDetections = [...prev];
+                    rawObjects.forEach(obj => {
+                        const objId = `${obj.class_name}_${obj.bbox.join(',')}`;
+                        const existing = newDetections.find(o => o.id === objId);
+                        if (existing) {
+                            existing.confirmCount = Math.min(existing.confirmCount + 1, 3);
+                        } else {
+                            newDetections.push({
+                                class_name: obj.class_name,
+                                confidence: obj.confidence,
+                                bbox: obj.bbox,
+                                confirmCount: 1,
+                                id: objId,
+                            });
+                        }
+                    });
+                    // Remove objects not seen in this frame (simple decay)
+                    return newDetections.filter(n => rawObjects.some(o => `${o.class_name}_${o.bbox.join(',')}` === n.id));
+                });
+            }
         };
-    }, [showPreview, connectWebSocket]);
+        ws.onclose = () => setDetections([]);
+        return () => ws.close();
+    }, [showPreview, data.cameraId]);
 
     const drawOverlay = useCallback(() => {
         const canvas = canvasRef.current;
@@ -75,13 +75,28 @@ export const CameraNode = ({ id, data }: NodeProps<CameraNodeData>) => {
             const px = x * canvas.width, py = y * canvas.height;
             const pw = w * canvas.width, ph = h * canvas.height;
             const violation = obj.class_name === 'no-helmet' || obj.class_name === 'fire';
+            const confirmed = obj.confirmCount >= 3;
+
+            // Bounding box
             ctx.strokeStyle = violation ? '#fb7185' : '#e2e8f0';
             ctx.lineWidth = 1.2;
             ctx.strokeRect(px, py, pw, ph);
             ctx.fillStyle = violation ? '#fb7185' : '#e2e8f0';
             ctx.font = '9px Inter';
             ctx.fillText(`${obj.class_name} (${(obj.confidence * 100).toFixed(0)}%)`, px, py - 4);
-            if (violation) {
+
+            // Confirmation progress bar
+            const barWidth = pw;
+            const barHeight = 4;
+            const barX = px;
+            const barY = py + ph + 2;
+            const fillPercent = obj.confirmCount / 3;
+            ctx.fillStyle = 'rgba(0,0,0,0.6)';
+            ctx.fillRect(barX, barY, barWidth, barHeight);
+            ctx.fillStyle = confirmed ? '#4ade80' : '#facc15';
+            ctx.fillRect(barX, barY, barWidth * fillPercent, barHeight);
+
+            if (violation && confirmed) {
                 ctx.fillStyle = '#fb7185';
                 ctx.font = 'bold 10px Inter';
                 ctx.fillText('⚠ BREACH', px + pw + 4, py + 14);
