@@ -1,12 +1,12 @@
 import { Handle, Position, NodeProps } from 'reactflow';
 import { Cpu } from 'lucide-react';
 import { DetectorNodeData } from '../../types';
-import { MetallicSilverCard } from '../effects/MetallicSilverCard';
+import { ReflectiveCard } from '../effects/ReflectiveCard';
 
 export const DetectorNode = ({ id, data }: NodeProps<DetectorNodeData>) => {
     const isProcessing = (data as any).isProcessing ?? false;
     return (
-        <MetallicSilverCard className="p-0" style={{ minWidth: 150 }}>
+        <ReflectiveCard className="p-0" style={{ minWidth: 150 }}>
             <Handle
                 type="target"
                 position={Position.Left}
@@ -30,6 +30,6 @@ export const DetectorNode = ({ id, data }: NodeProps<DetectorNodeData>) => {
                     ))}
                 </div>
             </div>
-        </MetallicSilverCard>
+        </ReflectiveCard>
     );
 };

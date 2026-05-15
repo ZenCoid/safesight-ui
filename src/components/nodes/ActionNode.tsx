@@ -1,7 +1,7 @@
 import { Handle, Position, NodeProps } from 'reactflow';
 import { MessageCircle, Mail, Bell } from 'lucide-react';
 import { ActionNodeData } from '../../types';
-import { MetallicSilverCard } from '../effects/MetallicSilverCard';
+import { ReflectiveCard } from '../effects/ReflectiveCard';
 
 const icons: Record<string, React.ReactNode> = {
     whatsapp: <MessageCircle className="w-4 h-4" />,
@@ -10,7 +10,7 @@ const icons: Record<string, React.ReactNode> = {
 
 export const ActionNode = ({ id, data }: NodeProps<ActionNodeData>) => {
     return (
-        <MetallicSilverCard className="p-0" style={{ minWidth: 150 }}>
+        <ReflectiveCard className="p-0" style={{ minWidth: 150 }}>
             <Handle
                 type="target"
                 position={Position.Left}
@@ -29,6 +29,6 @@ export const ActionNode = ({ id, data }: NodeProps<ActionNodeData>) => {
                     ))}
                 </div>
             </div>
-        </MetallicSilverCard>
+        </ReflectiveCard>
     );
 };

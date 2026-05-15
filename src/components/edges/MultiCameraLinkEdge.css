@@ -1,0 +1,5 @@
+@keyframes dashPulse {
+    to {
+        stroke-dashoffset: -20;
+    }
+}

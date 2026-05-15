@@ -14,12 +14,17 @@ import { VLMSearchNode } from './nodes/VLMSearchNode';
 import { useFlowStore } from '../store/flowStore';
 import { CustomNodeData } from '../types';
 import { v4 as uuidv4 } from 'uuid';
+import MultiCameraLinkEdge from '../edges/MultiCameraLinkEdge';
 
 const nodeTypes = {
     camera: CameraNode,
     detector: DetectorNode,
     action: ActionNode,
     vlmSearch: VLMSearchNode,
+};
+
+const edgeTypes = {
+    multiCameraLink: MultiCameraLinkEdge,
 };
 
 export const RuleCanvas = () => {
@@ -60,6 +65,7 @@ export const RuleCanvas = () => {
             onEdgesChange={onEdgesChange}
             onConnect={onConnect}
             nodeTypes={nodeTypes}
+            edgeTypes={edgeTypes}
             onInit={inst => { reactFlowInstance.current = inst; }}
             onDragOver={onDragOver}
             onDrop={onDrop}

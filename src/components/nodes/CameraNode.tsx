@@ -3,14 +3,14 @@ import { Handle, Position, NodeProps } from 'reactflow';
 import { Camera } from 'lucide-react';
 import { CameraNodeData } from '../../types';
 import { useFlowStore } from '../../store/flowStore';
-import { MetallicSilverCard } from '../effects/MetallicSilverCard';
+import { ReflectiveCard } from '../effects/ReflectiveCard';
 
 interface DetectionWithConfirm {
     class_name: string;
     confidence: number;
-    bbox: number[];        // [xmin, ymin, xmax, ymax] normalised 0‑1
-    confirmCount: number;  // 0..3
-    id: string;            // unique identifier: `${class_name}_${bbox.join(',')}`
+    bbox: number[];
+    confirmCount: number;
+    id: string;
 }
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
@@ -24,6 +24,7 @@ export const CameraNode = ({ id, data }: NodeProps<CameraNodeData>) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const wsRef = useRef<WebSocket | null>(null);
     const [timestamp, setTimestamp] = useState('');
+    const [isLiveSync, setIsLiveSync] = useState(false);
     const isProcessing = (data as any).isProcessing ?? false;
 
     const streamUrl = `${API_BASE}/cameras/${data.cameraId}/stream`;
@@ -32,7 +33,10 @@ export const CameraNode = ({ id, data }: NodeProps<CameraNodeData>) => {
         if (!showPreview) return;
         const ws = new WebSocket(`${WS_BASE}/ws/overlay`);
         wsRef.current = ws;
-        ws.onopen = () => ws.send(JSON.stringify({ action: 'subscribe', camera_id: data.cameraId }));
+        ws.onopen = () => {
+            ws.send(JSON.stringify({ action: 'subscribe', camera_id: data.cameraId }));
+            setIsLiveSync(true);
+        };
         ws.onmessage = (event) => {
             const d = JSON.parse(event.data);
             if (d.camera_id === data.cameraId) {
@@ -49,7 +53,7 @@ export const CameraNode = ({ id, data }: NodeProps<CameraNodeData>) => {
                             newDetections.push({
                                 class_name: obj.class_name,
                                 confidence: obj.confidence,
-                                bbox: obj.bbox,   // keep as [xmin, ymin, xmax, ymax]
+                                bbox: obj.bbox,
                                 confirmCount: 1,
                                 id: objId,
                             });
@@ -59,7 +63,10 @@ export const CameraNode = ({ id, data }: NodeProps<CameraNodeData>) => {
                 });
             }
         };
-        ws.onclose = () => setDetections([]);
+        ws.onclose = () => {
+            setDetections([]);
+            setIsLiveSync(false);
+        };
         return () => ws.close();
     }, [showPreview, data.cameraId]);
 
@@ -72,8 +79,18 @@ export const CameraNode = ({ id, data }: NodeProps<CameraNodeData>) => {
         canvas.width = img.clientWidth;
         canvas.height = img.clientHeight;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Draw scanline overlay (CSS already does the effect, but we add a slightly darker grid)
+        ctx.strokeStyle = 'rgba(226, 232, 240, 0.06)';
+        ctx.lineWidth = 0.5;
+        for (let y = 0; y < canvas.height; y += 4) {
+            ctx.beginPath();
+            ctx.moveTo(0, y);
+            ctx.lineTo(canvas.width, y);
+            ctx.stroke();
+        }
+
         detections.forEach(obj => {
-            // Backend sends normalised [xmin, ymin, xmax, ymax]
             const [xmin, ymin, xmax, ymax] = obj.bbox;
             const px = xmin * canvas.width;
             const py = ymin * canvas.height;
@@ -82,7 +99,6 @@ export const CameraNode = ({ id, data }: NodeProps<CameraNodeData>) => {
             const violation = obj.class_name === 'no-helmet' || obj.class_name === 'fire';
             const confirmed = obj.confirmCount >= 3;
 
-            // Bounding box
             ctx.strokeStyle = violation ? '#fb7185' : '#e2e8f0';
             ctx.lineWidth = 1.2;
             ctx.strokeRect(px, py, pw, ph);
@@ -90,7 +106,6 @@ export const CameraNode = ({ id, data }: NodeProps<CameraNodeData>) => {
             ctx.font = '9px Inter';
             ctx.fillText(`${obj.class_name} (${(obj.confidence * 100).toFixed(0)}%)`, px, py - 4);
 
-            // Confirmation progress bar
             const barHeight = 4;
             const barY = py + ph + 2;
             const fillPercent = obj.confirmCount / 3;
@@ -105,10 +120,30 @@ export const CameraNode = ({ id, data }: NodeProps<CameraNodeData>) => {
                 ctx.fillText('⚠ BREACH', px + pw + 4, py + 14);
             }
         });
+
+        // LIVE SYNC indicator (bottom‑right)
+        if (isLiveSync) {
+            const text = 'LIVE SYNC';
+            ctx.font = 'bold 10px Inter';
+            const metrics = ctx.measureText(text);
+            const textX = canvas.width - metrics.width - 6;
+            const textY = canvas.height - 6;
+            ctx.fillStyle = '#fb7185';
+            ctx.fillText(text, textX, textY);
+
+            // Pulsing dot
+            const dotX = canvas.width - 8;
+            const dotY = canvas.height - 12;
+            ctx.beginPath();
+            ctx.arc(dotX, dotY, 4, 0, Math.PI * 2);
+            ctx.fillStyle = '#fb7185';
+            ctx.fill();
+        }
+
         ctx.fillStyle = 'rgba(226,232,240,0.8)';
         ctx.font = '9px monospace';
         ctx.fillText(timestamp, canvas.width - 140, canvas.height - 8);
-    }, [detections, timestamp]);
+    }, [detections, timestamp, isLiveSync]);
 
     useEffect(() => {
         const interval = setInterval(drawOverlay, 100);
@@ -116,7 +151,7 @@ export const CameraNode = ({ id, data }: NodeProps<CameraNodeData>) => {
     }, [drawOverlay]);
 
     return (
-        <MetallicSilverCard className="p-0" style={{ minWidth: 210 }}>
+        <ReflectiveCard className="p-0" style={{ minWidth: 210 }}>
             <Handle
                 type="source"
                 position={Position.Right}
@@ -154,6 +189,6 @@ export const CameraNode = ({ id, data }: NodeProps<CameraNodeData>) => {
                     Edit Zones
                 </button>
             </div>
-        </MetallicSilverCard>
+        </ReflectiveCard>
     );
 };

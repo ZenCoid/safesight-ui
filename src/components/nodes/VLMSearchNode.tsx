@@ -3,7 +3,7 @@ import { Handle, Position, NodeProps } from 'reactflow';
 import { BrainCircuit } from 'lucide-react';
 import { VLMSearchNodeData } from '../../types';
 import axios from 'axios';
-import { MetallicSilverCard } from '../effects/MetallicSilverCard';
+import { ReflectiveCard } from '../effects/ReflectiveCard';
 import { ProcessingDots } from '../effects/ProcessingDots';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
@@ -41,7 +41,7 @@ export const VLMSearchNode = ({ id, data }: NodeProps<VLMSearchNodeData>) => {
     };
 
     return (
-        <MetallicSilverCard className="p-0" style={{ minWidth: 270 }}>
+        <ReflectiveCard className="p-0" style={{ minWidth: 270 }}>
             <Handle
                 type="target"
                 position={Position.Left}
@@ -87,6 +87,6 @@ export const VLMSearchNode = ({ id, data }: NodeProps<VLMSearchNodeData>) => {
                     )}
                 </div>
             </div>
-        </MetallicSilverCard>
+        </ReflectiveCard>
     );
 };

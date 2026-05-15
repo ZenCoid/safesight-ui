@@ -5,9 +5,20 @@ import axios from 'axios';
 
 interface Props { ruleName: string; onClose: () => void; }
 
+interface AlertFrame {
+    frame_index: number;
+    timestamp: string;
+    confidence: number;
+}
+
 export const RulePreview = ({ ruleName, onClose }: Props) => {
     const [status, setStatus] = useState('');
-    const [simulateResult, setSimulateResult] = useState<string | null>(null);
+    const [simulateResult, setSimulateResult] = useState<{
+        total_frames: number;
+        alerts_fired: number;
+        predicted_alert_density: number;
+        alert_frames: AlertFrame[];
+    } | null>(null);
     const rule = generateRule(ruleName);
 
     const handleDeploy = async () => {
@@ -16,9 +27,8 @@ export const RulePreview = ({ ruleName, onClose }: Props) => {
     const handleSimulate = async () => {
         try {
             const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'}/rules/simulate`, rule);
-            const density = res.data.predicted_alert_density;
-            setSimulateResult(`Density: ${(density * 100).toFixed(1)}% (${res.data.alerts_fired}/${res.data.total_frames})`);
-        } catch { setSimulateResult('Simulation failed'); }
+            setSimulateResult(res.data);
+        } catch { setSimulateResult(null); }
     };
 
     return (
@@ -31,7 +41,33 @@ export const RulePreview = ({ ruleName, onClose }: Props) => {
                 <pre className="text-xs bg-black/30 p-4 rounded text-[#e2e8f0]/60 max-h-96 overflow-auto">
                     {JSON.stringify(rule, null, 2)}
                 </pre>
-                {simulateResult && <div className="mt-2 text-sm text-[#fb7185]">{simulateResult}</div>}
+                {simulateResult && (
+                    <div className="mt-4">
+                        <div className="text-sm text-[#e2e8f0] mb-2">
+                            Density: {(simulateResult.predicted_alert_density * 100).toFixed(1)}% ({simulateResult.alerts_fired}/{simulateResult.total_frames})
+                        </div>
+                        <div className="grid grid-cols-[repeat(50,1fr)] gap-[1px] h-12">
+                            {Array.from({ length: 50 }, (_, i) => {
+                                const alert = simulateResult.alert_frames.find(a => a.frame_index === i);
+                                const intensity = alert ? alert.confidence : 0;
+                                return (
+                                    <div
+                                        key={i}
+                                        className="h-full rounded-sm"
+                                        style={{
+                                            backgroundColor: intensity > 0.8 ? '#fb7185' :
+                                                intensity > 0.5 ? '#fde047' :
+                                                    intensity > 0 ? '#e2e8f0' :
+                                                        '#1e293b',
+                                            opacity: intensity > 0 ? 1 : 0.4,
+                                        }}
+                                        title={alert ? `Frame ${i}: ${(alert.confidence * 100).toFixed(0)}%` : `Frame ${i}: no alert`}
+                                    />
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
                 <div className="mt-4 flex justify-between">
                     <span className="text-xs text-[#e2e8f0]/40">{status}</span>
                     <div className="flex gap-2">

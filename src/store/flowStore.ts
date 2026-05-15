@@ -40,7 +40,6 @@ export const useFlowStore = create<FlowState>((set, get) => ({
     selectedCameraForZone: null,
     warningNodeIds: new Set<string>(),
 
-    // Recalculate warnings whenever graph changes
     recalcWarnings: () => {
         const errors = validateGraph();
         set({ warningNodeIds: getWarningNodeIds(errors) });
@@ -69,7 +68,14 @@ export const useFlowStore = create<FlowState>((set, get) => ({
     },
 
     onConnect: (connection) => {
-        set((state) => ({ edges: addEdge(connection, state.edges) }));
+        set((state) => {
+            const sourceNode = state.nodes.find(n => n.id === connection.source);
+            const targetNode = state.nodes.find(n => n.id === connection.target);
+            const edgeType = sourceNode?.type === 'camera' && targetNode?.type === 'camera'
+                ? 'multiCameraLink'
+                : undefined;
+            return { edges: addEdge({ ...connection, type: edgeType }, state.edges) };
+        });
         get().recalcWarnings();
     },
 
