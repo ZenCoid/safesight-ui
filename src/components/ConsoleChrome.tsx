@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { ShieldCheck, Eye, EyeOff } from 'lucide-react';
 import axios from 'axios';
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
+
 export const ConsoleChrome = () => {
     const [time, setTime] = useState('');
     const [privacyEnabled, setPrivacyEnabled] = useState(false);
@@ -17,14 +19,14 @@ export const ConsoleChrome = () => {
     }, []);
 
     useEffect(() => {
-        axios.get('http://127.0.0.1:8000/privacy/status')
+        axios.get(`${API_BASE}/privacy/status`)
             .then(res => setPrivacyEnabled(res.data.privacy_enabled))
             .catch(() => { });
     }, []);
 
     const togglePrivacy = async () => {
         try {
-            const res = await axios.post('http://127.0.0.1:8000/privacy/toggle');
+            const res = await axios.post(`${API_BASE}/privacy/toggle`);
             setPrivacyEnabled(res.data.privacy_enabled);
         } catch (e) {
             console.error(e);

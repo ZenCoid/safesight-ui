@@ -6,6 +6,8 @@ import axios from 'axios';
 import { MetallicSilverCard } from '../effects/MetallicSilverCard';
 import { ProcessingDots } from '../effects/ProcessingDots';
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
+
 export const VLMSearchNode = ({ id, data }: NodeProps<VLMSearchNodeData>) => {
     const [query, setQuery] = useState(data.query || '');
     const [channel, setChannel] = useState(data.channel || 'whatsapp');
@@ -28,7 +30,7 @@ export const VLMSearchNode = ({ id, data }: NodeProps<VLMSearchNodeData>) => {
         try {
             const formData = new FormData();
             formData.append('file', file);
-            const res = await axios.post('http://127.0.0.1:8000/minio/upload', formData);
+            const res = await axios.post(`${API_BASE}/minio/upload`, formData);
             setImageKey(res.data.object_name);
         } catch (err) {
             console.error(err);

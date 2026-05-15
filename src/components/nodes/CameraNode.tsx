@@ -13,6 +13,9 @@ interface DetectionWithConfirm {
     id: string;             // unique identifier: `${class_name}_${bbox.join(',')}`
 }
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
+const WS_BASE = API_BASE.replace(/^http/, 'ws');
+
 export const CameraNode = ({ id, data }: NodeProps<CameraNodeData>) => {
     const setSelected = useFlowStore(s => s.setSelectedCameraForZone);
     const [showPreview, setShowPreview] = useState(false);
@@ -23,11 +26,11 @@ export const CameraNode = ({ id, data }: NodeProps<CameraNodeData>) => {
     const [timestamp, setTimestamp] = useState('');
     const isProcessing = (data as any).isProcessing ?? false;
 
-    const streamUrl = `http://127.0.0.1:8000/cameras/${data.cameraId}/stream`;
+    const streamUrl = `${API_BASE}/cameras/${data.cameraId}/stream`;
 
     useEffect(() => {
         if (!showPreview) return;
-        const ws = new WebSocket('ws://127.0.0.1:8000/ws/overlay');
+        const ws = new WebSocket(`${WS_BASE}/ws/overlay`);
         wsRef.current = ws;
         ws.onopen = () => ws.send(JSON.stringify({ action: 'subscribe', camera_id: data.cameraId }));
         ws.onmessage = (event) => {

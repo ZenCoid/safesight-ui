@@ -11,11 +11,14 @@ const items = [
     { id: 'forensic', icon: FolderSearch, label: 'Forensic' },
 ];
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
+const WS_BASE = API_BASE.replace(/^http/, 'ws');
+
 export const IntelligenceRail = ({ active, onSelect }: Props) => {
     const [telemetry, setTelemetry] = useState<any>(null);
 
     useEffect(() => {
-        const ws = new WebSocket('ws://127.0.0.1:8000/ws/telemetry');
+        const ws = new WebSocket(`${WS_BASE}/ws/telemetry`);
         ws.onmessage = (event) => {
             try {
                 setTelemetry(JSON.parse(event.data));
