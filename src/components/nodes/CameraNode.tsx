@@ -8,7 +8,7 @@ import { MetallicSilverCard } from '../effects/MetallicSilverCard';
 interface DetectionWithConfirm {
     class_name: string;
     confidence: number;
-    bbox: number[];        // [xmin, ymin, xmax, ymax] normalised
+    bbox: number[];        // [xmin, ymin, xmax, ymax] normalised 0‑1
     confirmCount: number;  // 0..3
     id: string;            // unique identifier: `${class_name}_${bbox.join(',')}`
 }
@@ -74,7 +74,7 @@ export const CameraNode = ({ id, data }: NodeProps<CameraNodeData>) => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         detections.forEach(obj => {
             const [xmin, ymin, xmax, ymax] = obj.bbox;
-            // Convert to pixel coordinates
+            // Convert normalised coordinates to pixel space
             const px = xmin * canvas.width;
             const py = ymin * canvas.height;
             const pw = (xmax - xmin) * canvas.width;
