@@ -68,14 +68,14 @@ export const RuleCanvas = () => {
             deleteKeyCode={['Backspace', 'Delete']}
             connectionMode={ConnectionMode.Loose}
             connectionRadius={40}
-            connectionLineStyle={{ stroke: '#94a3b8', strokeWidth: 2, strokeDasharray: '5 5' }}
+            connectionLineStyle={{ stroke: '#e2e8f0', strokeWidth: 1, strokeDasharray: '4 4', opacity: 0.5 }}
             defaultEdgeOptions={{
                 animated: true,
-                style: { stroke: '#e2e8f0', strokeWidth: 1.5 },
+                style: { stroke: '#e2e8f0', strokeWidth: 1.5, opacity: 0.7 },
             }}
         >
-            <Background color="rgba(226, 232, 240, 0.03)" gap={24} size={0.5} />
-            <Controls className="!bg-transparent !border-none !fill-slate-600" />
+            <Background color="rgba(226, 232, 240, 0.02)" gap={24} size={0.5} />
+            <Controls className="!bg-transparent !border-none !fill-[#e2e8f0]/40" />
         </ReactFlow>
     );
 };

@@ -5,6 +5,8 @@ import { CameraNodeData } from '../../types';
 import { useFlowStore } from '../../store/flowStore';
 import { MetallicSilverCard } from '../effects/MetallicSilverCard';
 
+const WS_BASE = import.meta.env.VITE_WS_URL || 'ws://127.0.0.1:8000';
+
 export const CameraNode = ({ id, data }: NodeProps<CameraNodeData>) => {
     const setSelected = useFlowStore(s => s.setSelectedCameraForZone);
     const [showPreview, setShowPreview] = useState(false);
@@ -12,26 +14,52 @@ export const CameraNode = ({ id, data }: NodeProps<CameraNodeData>) => {
     const imgRef = useRef<HTMLImageElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const wsRef = useRef<WebSocket | null>(null);
+    const reconnectTimer = useRef<any>(null);
     const [timestamp, setTimestamp] = useState('');
     const isProcessing = (data as any).isProcessing ?? false;
 
-    const streamUrl = `http://127.0.0.1:8000/cameras/${data.cameraId}/stream`;
+    const streamUrl = `${import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'}/cameras/${data.cameraId}/stream`;
 
-    useEffect(() => {
+    const connectWebSocket = useCallback(() => {
         if (!showPreview) return;
-        const ws = new WebSocket('ws://127.0.0.1:8000/ws/overlay');
+        const ws = new WebSocket(`${WS_BASE}/ws/overlay`);
         wsRef.current = ws;
-        ws.onopen = () => ws.send(JSON.stringify({ action: 'subscribe', camera_id: data.cameraId }));
+
+        ws.onopen = () => {
+            ws.send(JSON.stringify({ action: 'subscribe', camera_id: data.cameraId }));
+        };
+
         ws.onmessage = (event) => {
-            const d = JSON.parse(event.data);
-            if (d.camera_id === data.cameraId) {
-                setDetections(d.objects || []);
-                setTimestamp(new Date().toLocaleTimeString('en-US', { hour12: false }));
+            try {
+                const d = JSON.parse(event.data);
+                if (d.camera_id === data.cameraId) {
+                    setDetections(d.objects || []);
+                    setTimestamp(new Date().toLocaleTimeString('en-US', { hour12: false }));
+                }
+            } catch { }
+        };
+
+        ws.onclose = () => {
+            setDetections([]);
+            if (showPreview) {
+                reconnectTimer.current = setTimeout(connectWebSocket, 3000);
             }
         };
-        ws.onclose = () => setDetections([]);
-        return () => ws.close();
+
+        ws.onerror = () => {
+            ws.close();
+        };
     }, [showPreview, data.cameraId]);
+
+    useEffect(() => {
+        if (showPreview) {
+            connectWebSocket();
+        }
+        return () => {
+            if (reconnectTimer.current) clearTimeout(reconnectTimer.current);
+            wsRef.current?.close();
+        };
+    }, [showPreview, connectWebSocket]);
 
     const drawOverlay = useCallback(() => {
         const canvas = canvasRef.current;

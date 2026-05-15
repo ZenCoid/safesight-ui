@@ -32,10 +32,8 @@ function App() {
     useEffect(() => { getCameras().then(res => setCameras(res.data)).catch(console.error); }, []);
 
     const handleDeploy = async () => {
-        // 1. Validate graph
         const errors = validateGraph();
         if (errors.length > 0) {
-            // Show the first error as toast
             addToast(errors[0].message, 'error');
             return;
         }
@@ -77,7 +75,7 @@ function App() {
     };
 
     return (
-        <div className="h-screen flex flex-col bg-[#0a0a0f] text-slate-200 font-['Inter'] relative overflow-hidden">
+        <div className="h-screen flex flex-col bg-[#020202] text-[#e2e8f0] font-['Inter'] relative overflow-hidden">
             <DotGrid />
             <ConsoleChrome />
             <div className="flex flex-1 overflow-hidden">
@@ -124,7 +122,7 @@ function App() {
                 <div className="absolute bottom-6 right-6 z-20 flex gap-3">
                     <MagneticButton
                         onClick={() => setShowPreview(true)}
-                        className="px-4 py-2 bg-white/[0.04] border border-slate-800 text-xs text-slate-400 rounded-lg hover:bg-white/[0.08]"
+                        className="px-4 py-2 bg-white/[0.04] border border-[#e2e8f0]/20 text-xs text-[#e2e8f0]/60 rounded-lg hover:bg-white/[0.08]"
                     >
                         Preview
                     </MagneticButton>

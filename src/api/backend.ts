@@ -1,7 +1,9 @@
 import axios from 'axios';
 
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
+
 const api = axios.create({
-    baseURL: 'http://127.0.0.1:8000',
+    baseURL: BASE_URL,
 });
 
 export interface Camera {
@@ -17,7 +19,7 @@ export interface Camera {
 
 export interface PolygonZone {
     name: string;
-    points: number[][]; // normalized 0‑1
+    points: number[][];
 }
 
 export interface ScheduleWindow {
@@ -53,7 +55,7 @@ export interface RuleDefinition {
     cooldown_seconds: number;
     schedule: ScheduleWindow | null;
     escalation_levels: EscalationLevel[];
-    multi_camera_links: MultiCameraLink[];   // now correctly typed
+    multi_camera_links: MultiCameraLink[];
     condition: string;
 }
 

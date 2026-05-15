@@ -13,7 +13,7 @@ export const ProcessingDots = ({ active = false, className = '' }: Props) => {
             {[0, 1, 2].map(i => (
                 <motion.div
                     key={i}
-                    className="w-1.5 h-1.5 rounded-full bg-slate-400"
+                    className="w-1.5 h-1.5 rounded-full bg-[#e2e8f0]/60"
                     animate={{
                         opacity: [0.2, 1, 0.2],
                         scale: [0.8, 1.2, 0.8],

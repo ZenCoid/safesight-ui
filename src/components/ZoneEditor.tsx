@@ -56,10 +56,10 @@ export const ZoneEditor = ({ cameraId, cameraName, onClose }: Props) => {
     };
 
     return (
-        <div className="absolute top-0 right-0 w-96 h-full bg-gray-900 border-l border-gray-700 p-4 flex flex-col z-50 shadow-2xl">
+        <div className="absolute top-0 right-0 w-96 h-full bg-[#020202] border-l border-[#e2e8f0]/10 p-4 flex flex-col z-50 shadow-2xl">
             <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-bold">Zones: {cameraName}</h3>
-                <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">✕</button>
+                <h3 className="text-lg font-bold text-[#e2e8f0]">Zones: {cameraName}</h3>
+                <button onClick={onClose} className="text-[#e2e8f0]/40 hover:text-white transition-colors">✕</button>
             </div>
             <div className="flex-1 bg-black rounded overflow-hidden mb-2 flex items-center justify-center">
                 <Stage
@@ -94,15 +94,15 @@ export const ZoneEditor = ({ cameraId, cameraName, onClose }: Props) => {
             </div>
             <div className="flex gap-2">
                 {!isFinished ? (
-                    <button onClick={finishPolygon} className="flex-1 bg-safesight-500 hover:bg-safesight-600 rounded py-1 text-sm transition-colors">
+                    <button onClick={finishPolygon} className="flex-1 bg-teal-400/10 border border-teal-400/30 text-teal-400 rounded py-1 text-sm transition-colors">
                         Close Polygon
                     </button>
                 ) : (
-                    <button onClick={saveZone} className="flex-1 bg-safesight-500 hover:bg-safesight-600 rounded py-1 text-sm transition-colors">
+                    <button onClick={saveZone} className="flex-1 bg-teal-400/10 border border-teal-400/30 text-teal-400 rounded py-1 text-sm transition-colors">
                         Save Zone
                     </button>
                 )}
-                <button onClick={() => { setPoints([]); setIsFinished(false); }} className="px-3 bg-gray-700 hover:bg-gray-600 rounded text-sm transition-colors">Reset</button>
+                <button onClick={() => { setPoints([]); setIsFinished(false); }} className="px-3 bg-[#e2e8f0]/10 text-[#e2e8f0]/60 rounded text-sm transition-colors hover:bg-[#e2e8f0]/20">Reset</button>
             </div>
         </div>
     );
