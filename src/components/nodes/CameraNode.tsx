@@ -73,8 +73,8 @@ export const CameraNode = ({ id, data }: NodeProps<CameraNodeData>) => {
         canvas.height = img.clientHeight;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         detections.forEach(obj => {
+            // Backend sends normalised [xmin, ymin, xmax, ymax]
             const [xmin, ymin, xmax, ymax] = obj.bbox;
-            // Convert normalised coordinates to pixel space
             const px = xmin * canvas.width;
             const py = ymin * canvas.height;
             const pw = (xmax - xmin) * canvas.width;
