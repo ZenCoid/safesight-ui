@@ -14,7 +14,7 @@ import { VLMSearchNode } from './nodes/VLMSearchNode';
 import { useFlowStore } from '../store/flowStore';
 import { CustomNodeData } from '../types';
 import { v4 as uuidv4 } from 'uuid';
-import MultiCameraLinkEdge from '../edges/MultiCameraLinkEdge';
+import MultiCameraLinkEdge from './edges/MultiCameraLinkEdge';
 
 const nodeTypes = {
     camera: CameraNode,
